@@ -38,7 +38,7 @@ These are the components used by a Thread-based KNX IoT installation, including 
      - Description
      - When it is required
    * - KNX IoT Point API device (Thread)
-     - A KNX IoT end device running the Point API stack; in the |addon| it communicates over Thread. **This is the component the |addon| provides.**
+     - A KNX IoT end device running the Point API stack; in the |addon| it communicates over Thread. **This is the component that this add-on provides.**
      - Required in any KNX IoT network.
    * - Thread Border Router (IPv6 Border Router)
      - Connects the Thread mesh to a Wi-Fi or Ethernet network, similar to how a Wi-Fi access point connects wireless clients to the LAN.

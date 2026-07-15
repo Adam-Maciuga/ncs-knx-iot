@@ -18,10 +18,10 @@ Protocol stack
 
 The following diagram shows the KNX IoT protocol stack as used by the |addon|, where the IPv6 transport is provided by Thread.
 
-.. figure:: images/knx_iot_protocol_stack.png
-   :alt: KNX IoT protocol stack as used by the |addon|
-
-   KNX IoT protocol stack as used by the |addon|
+.. graphviz:: images/knx_iot_protocol_stack.dot
+   :alt: KNX IoT protocol stack as used by the KNX IoT add-on
+   :align: center
+   :layout: dot
 
 Data flow
 =========

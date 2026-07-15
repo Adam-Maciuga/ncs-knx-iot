@@ -8,7 +8,7 @@ KNX IoT: Light Switch Sensor
    :depth: 2
 
 This sample demonstrates a KNX IoT light switch sensor built on top of the |addon| for the |NCS|.
-The sample implements the KNX **Light Switching Sensor Basic** (LSSB) functional block and transmits switch on/off s-mode messages over a Thread network using KNX IoT group communication.
+The sample implements the KNX **Light Switching Sensor Basic** (LSSB) functional block and transmits switch on/off S-mode messages over a Thread network using KNX IoT group communication.
 
 When paired with the :ref:`knx_iot_light_switch_actuator_sample` sample running on a second development kit, pressing a button on the sensor toggles the LED on the actuator.
 
@@ -34,8 +34,8 @@ Each channel provides the following datapoints:
 * Info on/off (``ioo``) - The status input datapoint (``GET`` and ``PUT``, ``if.i``).
   It reflects the status reported back by the bound actuator.
 
-When you press the application button, the sample toggles the ``soo`` datapoint of the first channel and transmits it as an s-mode multicast write to every device bound to the same group address.
-A bound actuator receives the s-mode message, drives its output, and announces its own status, which the sensor stores in its ``ioo`` datapoint.
+When you press the application button, the sample toggles the ``soo`` datapoint of the first channel and transmits it as an S-mode multicast write to every device bound to the same group address.
+A bound actuator receives the S-mode message, drives its output, and announces its own status, which the sensor stores in its ``ioo`` datapoint.
 
 Commissioning
 =============

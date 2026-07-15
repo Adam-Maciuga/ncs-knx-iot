@@ -16,10 +16,19 @@ __version__ = '0.0.1'
 _CONFIG_RE = re.compile(r'^\s*config\s+(\w+)', re.MULTILINE)
 
 
+def _is_kconfig_file(path: Path) -> bool:
+    """Return True for real Kconfig files, excluding Windows case-insensitive false positives."""
+    if '__pycache__' in path.parts:
+        return False
+    if path.suffix in {'.py', '.pyc'}:
+        return False
+    return path.name.startswith('Kconfig')
+
+
 def discover_kconfig_options(base_dir: Path) -> list[str]:
     options = set()
     for kconfig in base_dir.rglob('Kconfig*'):
-        if not kconfig.is_file():
+        if not kconfig.is_file() or not _is_kconfig_file(kconfig):
             continue
         for name in _CONFIG_RE.findall(kconfig.read_text(encoding='utf-8')):
             options.add(f'CONFIG_{name}')

@@ -30,10 +30,10 @@ Component overview
 
 The following diagram shows how a |addon| application is layered on top of the KNX IoT Point API stack, the OpenThread stack, and the |NCS|.
 
-.. figure:: images/knx_iot_component_overview.png
-   :alt: |addon| application layered on top of the stack and the |NCS|
-
-   |addon| application layered on top of the stack and the |NCS|
+.. graphviz:: images/knx_iot_component_overview.dot
+   :alt: KNX IoT add-on application layered on top of the stack and the nRF Connect SDK
+   :align: center
+   :layout: dot
 
 Integration library
 ===================
