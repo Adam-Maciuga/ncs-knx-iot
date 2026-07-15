@@ -44,10 +44,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r docs/requirements-doc.txt
 
-      - name: Install Doxygen and mscgen
+      - name: Install Doxygen, Graphviz, and mscgen
         run: |
           sudo apt-get update
-          sudo apt-get install -y doxygen mscgen
+          sudo apt-get install -y doxygen graphviz mscgen
 
       - name: Build Doxygen API documentation
         run: |
