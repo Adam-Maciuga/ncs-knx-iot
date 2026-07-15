@@ -31,7 +31,8 @@ A known issue can list one or both of the following entries:
 
    wontfix Won't fix
 
-List of known issues
-********************
+List of known issues for v0.1.0 release
+***************************************
 
-There are no known issues for the |addon| at this time.
+The following release is `experimental <Software maturity levels_>`_.
+Because of this, not all behavior is fully defined or validated.

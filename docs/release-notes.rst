@@ -3,8 +3,11 @@
 Release notes
 #############
 
-.. contents::
-   :local:
-   :depth: 2
+For detailed list on new features for a specific |addon| release, refer to the following:
 
-All the notable changes to the |addon| for the |NCS| are listed here.
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents
+   :glob:
+   
+   release_notes/release_notes_v010.rst

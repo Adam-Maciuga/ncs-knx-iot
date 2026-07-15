@@ -9,14 +9,17 @@ In combination with the |NCS|, the |addon| allows for development of KNX IoT app
 If you are new to KNX or KNX IoT, start with the :ref:`knx_iot_overview` for an introduction to the protocol and its infrastructure.
 For architecture and integration details, see :ref:`knx_iot_addon`.
 
+.. note::
+   The |addon| is provided as an `experimental feature <Software maturity levels_>`_.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents
 
    knx-iot/overview/index
    knx-iot/addon
-   knx-iot/setup
    knx-iot/samples
+   setup
    config
    software_maturity
    known_issues
