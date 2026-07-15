@@ -34,6 +34,7 @@ extensions = [
     'page_filter',
     'knx_iot_kconfig',
     'options_from_kconfig',
+    'sphinx.ext.graphviz',
 ]
 
 root_doc = 'index'
@@ -61,6 +62,12 @@ rst_epilog = """
 .. include:: /links.txt
 .. include:: /shortcuts.txt
 """
+
+# -- Options for graphviz -------------------------------------------------------
+
+graphviz_output_format = 'svg'
+graphviz_dot = 'dot'
+graphviz_dot_args = []
 
 # -- Options for table_from_rows (local add-on copy) -------------------------
 

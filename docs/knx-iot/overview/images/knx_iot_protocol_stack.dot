@@ -1,0 +1,155 @@
+digraph knx_iot_protocol_stack {
+    graph [
+        layout=dot,
+        bgcolor="transparent",
+        margin=0,
+        pad=0.05
+    ];
+
+    node [shape=plaintext, fontname="Arial"];
+
+    stack [
+        label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0" ALIGN="CENTER">
+                <TR><TD>
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#71D0E3" ALIGN="CENTER">
+                <TR><TD ALIGN="CENTER">
+                    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
+                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>KNX Application</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER">
+                            <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+                                <TR>
+                                    <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">Functional Blocks</FONT></TD>
+                                    <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">Datapoints and datapoint types</FONT></TD>
+                                </TR>
+                            </TABLE>
+                        </TD></TR>
+                    </TABLE>
+                </TD></TR>
+                <TR><TD HEIGHT="2"> </TD></TR>
+                <TR><TD ALIGN="CENTER">
+                    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
+                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>KNX IoT Point API</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER">
+                            <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+                                <TR>
+                                    <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">S-Mode Group communication</FONT></TD>
+                                    <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">Group Objects</FONT></TD>
+                                    <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">REST resources and URIs</FONT></TD>
+                                </TR>
+                            </TABLE>
+                        </TD></TR>
+                    </TABLE>
+                </TD></TR>
+                <TR><TD HEIGHT="2"> </TD></TR>
+                <TR><TD ALIGN="CENTER">
+                    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
+                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Data Encoding</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER">
+                            <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+                                <TR>
+                                    <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">CBOR (Primary)</FONT></TD>
+                                    <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">JSON (Optional)</FONT></TD>
+                                    <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">CoRE Link Format (for discovery)</FONT></TD>
+                                </TR>
+                            </TABLE>
+                        </TD></TR>
+                    </TABLE>
+                </TD></TR>
+                <TR><TD HEIGHT="2"> </TD></TR>
+                <TR><TD ALIGN="CENTER">
+                    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="4" CELLPADDING="0" WIDTH="400">
+                        <TR>
+                            <TD WIDTH="198" ALIGN="CENTER">
+                                <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="198">
+                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="198"><FONT COLOR="white" POINT-SIZE="12"><B>Application messaging</B></FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER">
+                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+                                            <TR><TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">CoAP</FONT></TD></TR>
+                                        </TABLE>
+                                    </TD></TR>
+                                </TABLE>
+                            </TD>
+                            <TD WIDTH="198" ALIGN="CENTER">
+                                <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="198">
+                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="198"><FONT COLOR="white" POINT-SIZE="12"><B>Application Security</B></FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER">
+                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+                                            <TR>
+                                                <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">OSCORE</FONT></TD>
+                                                <TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">PASE / SPAKE2+</FONT></TD>
+                                            </TR>
+                                        </TABLE>
+                                    </TD></TR>
+                                </TABLE>
+                            </TD>
+                        </TR>
+                    </TABLE>
+                </TD></TR>
+                <TR><TD HEIGHT="2"> </TD></TR>
+                <TR><TD ALIGN="CENTER">
+                    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
+                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Transport</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER">
+                            <TABLE BORDER="0" WIDTH="400" CELLSPACING="0" CELLPADDING="0">
+                                <TR>
+                                    <TD WIDTH="175" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                    <TD ALIGN="CENTER">
+                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+                                            <TR><TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">UDP</FONT></TD></TR>
+                                        </TABLE>
+                                    </TD>
+                                    <TD WIDTH="175" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                </TR>
+                            </TABLE>
+                        </TD></TR>
+                    </TABLE>
+                </TD></TR>
+                <TR><TD HEIGHT="2"> </TD></TR>
+                <TR><TD ALIGN="CENTER">
+                    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
+                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Network</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER">
+                            <TABLE BORDER="0" WIDTH="400" CELLSPACING="0" CELLPADDING="0">
+                                <TR>
+                                    <TD WIDTH="180" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                    <TD ALIGN="CENTER">
+                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+                                            <TR><TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">IPv6</FONT></TD></TR>
+                                        </TABLE>
+                                    </TD>
+                                    <TD WIDTH="180" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                </TR>
+                            </TABLE>
+                        </TD></TR>
+                    </TABLE>
+                </TD></TR>
+                <TR><TD HEIGHT="2"> </TD></TR>
+                <TR><TD ALIGN="CENTER">
+                    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
+                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>IPv6 Link</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER">
+                            <TABLE BORDER="0" WIDTH="400" CELLSPACING="0" CELLPADDING="0">
+                                <TR>
+                                    <TD WIDTH="112" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                    <TD WIDTH="176" ALIGN="CENTER" FIXEDSIZE="TRUE">
+                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
+                                            <TR><TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">Thread (IEEE 802.15.4)</FONT></TD></TR>
+                                        </TABLE>
+                                    </TD>
+                                    <TD WIDTH="112" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                </TR>
+                            </TABLE>
+                        </TD></TR>
+                    </TABLE>
+                </TD></TR>
+            </TABLE>
+                </TD></TR>
+                <TR><TD HEIGHT="8"> </TD></TR>
+                <TR><TD ALIGN="CENTER">
+                    <FONT POINT-SIZE="9" COLOR="#004F5E"><I>KNX IoT protocol stack as used by the KNX IoT add-on</I></FONT>
+                </TD></TR>
+            </TABLE>
+        >
+    ];
+}

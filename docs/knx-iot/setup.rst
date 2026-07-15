@@ -25,7 +25,7 @@ Follow the `Installing the nRF Connect SDK`_ instructions, with the following ex
       Select v\ |addon_version| of the |addon|.
       This step also installs nRF Connect SDK v\ |ncs_version|.
 
-   .. group-tab:: command line
+   .. group-tab:: Command line
 
       You can initialize workspace in two alternative ways:
 
@@ -45,7 +45,7 @@ Follow the `Installing the nRF Connect SDK`_ instructions, with the following ex
 
                west update
 
-      **Include the |addon| in the existing nRF Connect SDK workspace:**
+      **Include the add-on in the existing nRF Connect SDK workspace:**
 
       1. Assuming you have an existing nRF Connect SDK workspace in the :file:`ncs` folder, run the following commands:
 
@@ -75,7 +75,7 @@ Follow the `Installing the nRF Connect SDK`_ instructions, with the following ex
 
       2. Optionally, run these commands in case you need to go back to work on the nRF Connect SDK without the |addon|:
 
-         a. Configure the manifest path back to the nRF Connect SDK directory
+         a. Configure the manifest path back to the nRF Connect SDK directory.
 
             .. code-block:: console
 
@@ -99,4 +99,4 @@ Follow the `Installing the nRF Connect SDK`_ instructions, with the following ex
 
                nrf
 
-           This means that the current workspace is using the nRF Connect SDK.
+            This means that the current workspace is using the nRF Connect SDK.

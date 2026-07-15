@@ -16,7 +16,7 @@ The following table indicates the software maturity levels of the support for ea
 
 .. tabs::
 
-   .. group-tab:: nRF54 Series
+   .. group-tab:: nRF54L Series
 
       .. list-table::
          :widths: auto

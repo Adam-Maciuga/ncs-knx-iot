@@ -54,4 +54,4 @@ For deployments that require transport-layer encryption or certificate-based ide
 
 .. note::
    TLS-based access is an optional feature of the KNX IoT specification.
-   The |addon| focuses on OSCORE-based security and doesn't support it.
+   The |addon| focuses on OSCORE-based security and does not support it.

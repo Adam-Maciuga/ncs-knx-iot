@@ -8,7 +8,7 @@ KNX IoT: Light Switch Actuator
    :depth: 2
 
 This sample demonstrates a KNX IoT light switch actuator built on top of the |addon| for the |NCS|.
-The sample implements the KNX **Light Switching Actuator Basic** (LSAB) functional block and drives a load (shown on an LED) in response to switch on/off s-mode messages received over a Thread network using KNX IoT group communication.
+The sample implements the KNX **Light Switching Actuator Basic** (LSAB) functional block and drives a load (shown on an LED) in response to switch on/off S-mode messages received over a Thread network using KNX IoT group communication.
 
 When paired with the :ref:`knx_iot_light_switch_sensor_sample` sample running on a second development kit, the actuator turns its load on and off following the switch state transmitted by the sensor.
 
@@ -34,7 +34,7 @@ Each channel provides the following datapoints:
 * Info on/off (``ioo``) - The status output datapoint (``GET``, ``if.o``).
   The actuator announces this value to report its current state back to the group.
 
-When the actuator receives an s-mode multicast write on the ``soo`` datapoint of a channel, it drives its output, mirrors the value to the ``ioo`` datapoint, and announces the new status.
+When the actuator receives an S-mode multicast write on the ``soo`` datapoint of a channel, it drives its output, mirrors the value to the ``ioo`` datapoint, and announces the new status.
 The switched load of the first channel is represented by an LED.
 
 Commissioning
