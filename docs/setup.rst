@@ -8,7 +8,9 @@ This page outlines the requirements that you need to meet before you start worki
 Hardware requirements
 *********************
 
-The |addon| supports the nRF54L15 and nRF54LM20A/B SoCs.
+To use the |addon|, you need one of the following development kits:
+
+.. table-from-sample-yaml::
 
 Software requirements
 *********************
