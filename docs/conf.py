@@ -3,6 +3,7 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import re
 import sys
 from pathlib import Path
 
@@ -47,6 +48,13 @@ exclude_patterns = ['_build_sphinx', '_build_doxygen', 'venv', 'Thumbs.db', '.DS
 
 html_theme = 'sphinx_ncs_theme'
 
+html_theme_options = {
+    'docsets': {},
+}
+
+# Copied into the HTML output for the hosted documentation version switcher.
+html_extra_path = ['versions.json']
+
 ## -- Options for Breathe ----------------------------------------------------
 # https://breathe.readthedocs.io/en/latest/index.html
 #
@@ -58,8 +66,31 @@ breathe_default_project = 'ncs-knx-iot'
 breathe_default_members = ('members', )
 
 # Include following files at the end of each .rst file.
-rst_epilog = """
-.. include:: /links.txt
+# Substitutions such as |ncs_version| are not expanded in external link URIs by
+# Sphinx, so apply them when loading links.txt.
+def _read_rst_substitutions(path: Path) -> dict[str, str]:
+    substitutions: dict[str, str] = {}
+    for line in path.read_text(encoding='utf-8').splitlines():
+        match = re.match(r'\.\. \|([^|]+)\| replace:: (.*)', line)
+        if match:
+            substitutions[match.group(1)] = match.group(2)
+    return substitutions
+
+
+def _apply_substitutions(text: str, substitutions: dict[str, str]) -> str:
+    for name, value in substitutions.items():
+        text = text.replace(f'|{name}|', value)
+    return text
+
+
+_shortcuts_path = DOC_BASE / 'shortcuts.txt'
+_substitutions = _read_rst_substitutions(_shortcuts_path)
+_links = _apply_substitutions(
+    (DOC_BASE / 'links.txt').read_text(encoding='utf-8'),
+    _substitutions,
+)
+
+rst_epilog = f"""{_links}
 .. include:: /shortcuts.txt
 """
 
