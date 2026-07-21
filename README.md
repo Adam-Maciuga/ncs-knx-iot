@@ -4,7 +4,7 @@ The KNX IoT add-on for the nRF Connect SDK provides support for developing KNX I
 
 ## Getting started
 
-To get started with KNX IoT add-on for nRF Connect SDK, follow documentation.
+To get started with KNX IoT add-on for nRF Connect SDK, follow [documentation](https://nrfconnectdocs.nordicsemi.com/addons/ncs-knx-iot/latest/index.html).
 
 ##  License
 * Source code included within this repository is licensed under the [LicenseRef-Nordic-5-Clause](https://github.com/nrfconnect/ncs-knx-iot/blob/main/LICENSE)
