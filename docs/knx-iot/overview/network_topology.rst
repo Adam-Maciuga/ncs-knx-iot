@@ -17,11 +17,12 @@ KNX IoT is one part of the wider KNX ecosystem.
 A real installation can combine several KNX media (KNX TP, KNX RF, and KNXnet/IP) with KNX IoT devices, joined by couplers, routers, and IP infrastructure.
 Understanding this landscape makes it clear which part the |addon| provides: a KNX IoT Point API device running over Thread.
 
-For a visual overview, see the `KNX ecosystem landscape (photo) <https://support.knx.org/hc/article_attachments/11225049984018>`_ published by the KNX Association.
+The following diagram shows how the classic KNX media, IP infrastructure, and native KNX IoT devices fit together.
 
-.. note::
-   The link above points to a KNX-hosted photo of the ecosystem landscape and is used only as a placeholder.
-   Replace it with an original or permission-cleared diagram before release.
+.. graphviz:: images/knx_iot_network_topology.dot
+   :alt: KNX ecosystem landscape with classic KNX, IP infrastructure, and KNX IoT devices
+   :align: center
+   :layout: dot
 
 The following sections group the components that can appear in a KNX installation by the role they play.
 

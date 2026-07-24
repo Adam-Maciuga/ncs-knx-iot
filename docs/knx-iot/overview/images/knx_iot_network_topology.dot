@@ -1,0 +1,410 @@
+digraph knx_iot_network_topology {
+    graph [
+        layout=dot,
+        rankdir=TB,
+        bgcolor="transparent",
+        fontname="Arial",
+        pad=0.18,
+        nodesep=0.24,
+        ranksep=0.48,
+        splines=ortho,
+        newrank=true,
+        compound=true,
+        ordering=out
+    ];
+
+    node [
+        shape=box,
+        style="rounded,filled",
+        color="#007C92",
+        fillcolor="#71D0E3",
+        fontcolor="#004F5E",
+        fontname="Arial",
+        fontsize=10,
+        margin="0.14,0.10",
+        penwidth=1.5
+    ];
+
+    edge [
+        dir=none,
+        color="#007C92",
+        penwidth=1.5
+    ];
+
+    main_title [
+        shape=plain,
+        style="",
+        group="integration_center",
+        label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+                <TR><TD ALIGN="CENTER"><FONT COLOR="#004F5E" POINT-SIZE="18"><B>KNX ecosystem landscape</B></FONT></TD></TR>
+                <TR><TD ALIGN="CENTER"><FONT COLOR="#007C92" POINT-SIZE="11">TP, RF, IP, and IoT</FONT></TD></TR>
+            </TABLE>
+        >
+    ];
+
+    ip_router [
+        label="IP Wi-Fi router /\naccess point",
+        color="#004F5E",
+        fillcolor="#004F5E",
+        fontcolor="white",
+        fontsize=11,
+        penwidth=2,
+        width=2.20,
+        group="integration_center"
+    ];
+
+    ip_bus_classic [shape=point, style=invis, width=0, height=0, fixedsize=true, group="ip_classic"];
+    ip_bus_iot_router [shape=point, style=invis, width=0, height=0, fixedsize=true, group="ip_iot_router"];
+    ip_bus_center [
+        shape=plain,
+        style="",
+        label="IP backbone",
+        fontcolor="#007C92",
+        fontname="Arial",
+        fontsize=10,
+        group="integration_center"
+    ];
+    ip_bus_api_server [shape=point, style=invis, width=0, height=0, fixedsize=true, group="ip_api_server"];
+    ip_bus_iot [shape=point, style=invis, width=0, height=0, fixedsize=true, group="iot_bus"];
+
+    subgraph cluster_classic {
+        label="";
+        style="rounded";
+        color="#00A9CE";
+        penwidth=2;
+        margin=16;
+
+        classic_title [
+            shape=plain,
+            style="",
+            label=<
+                <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+                    <TR><TD ALIGN="CENTER"><FONT COLOR="#004F5E" POINT-SIZE="12"><B>Classic KNX</B></FONT></TD></TR>
+                    <TR><TD ALIGN="CENTER"><FONT COLOR="#007C92" POINT-SIZE="9">TP and RF infrastructure</FONT></TD></TR>
+                </TABLE>
+            >
+        ];
+
+        classic_ip_entry [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="ip_classic"
+        ];
+
+        node [
+            color="#6E6E6E",
+            fillcolor="#6E6E6E",
+            fontcolor="white",
+            width=1.35
+        ];
+
+        knx_ip [
+            label="KNX IP\ninterface / router",
+            color="#E6B800",
+            fillcolor="#FFF8D6",
+            fontcolor="#004F5E",
+            penwidth=2,
+            width=1.65,
+            group="classic_bus"
+        ];
+
+        power_supply [label="KNX power\nsupply"];
+        tp_device [label="KNX TP\ndevice"];
+        line_coupler [label="Line / area\ncoupler", group="classic_bus"];
+        segment_proxy [label="Segment\nproxy"];
+        media_coupler [label="Media coupler\n(TP / RF)"];
+        rf_device [label="KNX RF\ndevice"];
+
+        bus_upper [
+            shape=point,
+            style=invis,
+            color="#007C92",
+            fillcolor="#007C92",
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="classic_bus",
+            xlabel="KNX TP bus",
+            fontcolor="#007C92",
+            fontsize=9
+        ];
+
+        bus_middle [
+            shape=point,
+            style=invis,
+            color="#007C92",
+            fillcolor="#007C92",
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="classic_bus"
+        ];
+
+        bus_lower [
+            shape=point,
+            style=invis,
+            color="#007C92",
+            fillcolor="#007C92",
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="classic_bus"
+        ];
+
+        bus_device [
+            shape=point,
+            style=invis,
+            color="#007C92",
+            fillcolor="#007C92",
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="classic_bus"
+        ];
+
+        { rank=same; line_coupler; media_coupler; }
+        { rank=same; power_supply; bus_middle; }
+        { rank=same; tp_device; bus_device; }
+        { rank=same; segment_proxy; bus_lower; }
+
+        { rank=same; classic_title; classic_ip_entry; }
+
+        classic_title -> classic_ip_entry [style=invis, weight=100];
+        classic_ip_entry -> knx_ip:e [weight=100];
+        knx_ip -> bus_upper [weight=100];
+        bus_upper -> line_coupler [weight=100];
+        line_coupler -> bus_middle [weight=100];
+        bus_middle -> bus_device [weight=100];
+        bus_device -> bus_lower [weight=100];
+
+        bus_upper -> media_coupler [constraint=false, weight=0];
+        power_supply -> bus_middle [constraint=false, weight=0];
+        tp_device -> bus_device [constraint=false, weight=0];
+        segment_proxy -> bus_lower [constraint=false, weight=0];
+        media_coupler -> rf_device;
+    }
+
+    subgraph cluster_integration {
+        label="";
+        style="rounded";
+        color="#00A9CE";
+        penwidth=2;
+        margin=16;
+
+        integration_title [
+            shape=plain,
+            style="",
+            group="integration_center",
+            label=<
+                <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+                    <TR><TD ALIGN="CENTER"><FONT COLOR="#004F5E" POINT-SIZE="12"><B>KNX integration</B></FONT></TD></TR>
+                    <TR><TD ALIGN="CENTER"><FONT COLOR="#007C92" POINT-SIZE="9">Gateways and external applications</FONT></TD></TR>
+                </TABLE>
+            >
+        ];
+
+        integration_iot_router_entry [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="ip_iot_router"
+        ];
+
+        integration_api_server_entry [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="ip_api_server"
+        ];
+
+        iot_router [
+            label="KNX IoT Router\n(TP, RF, IPv4, IPv6)",
+            color="#E6B800",
+            fillcolor="#FFF8D6",
+            penwidth=2,
+            width=1.90,
+            group="ip_iot_router"
+        ];
+
+        api_server [
+            label="KNX IoT\nAPI Server",
+            color="#E6B800",
+            fillcolor="#FFF8D6",
+            penwidth=2,
+            width=1.65,
+            group="ip_api_server"
+        ];
+
+        api_client [
+            label="KNX IoT API client\n(application)",
+            color="#E6B800",
+            fillcolor="#FFF8D6",
+            penwidth=2,
+            width=1.65
+        ];
+
+        { rank=same; integration_iot_router_entry; integration_title; integration_api_server_entry; }
+        { rank=same; iot_router; api_server; }
+
+        integration_iot_router_entry -> integration_title [style=invis, weight=100];
+        integration_title -> integration_api_server_entry [style=invis, weight=100];
+        integration_iot_router_entry -> iot_router [weight=100];
+        integration_api_server_entry -> api_server [weight=100];
+        api_server -> api_client;
+    }
+
+    subgraph cluster_iot {
+        label="";
+        style="rounded";
+        color="#00A9CE";
+        penwidth=2;
+        margin=16;
+
+        iot_title [
+            shape=plain,
+            style="",
+            group="iot_devices",
+            label=<
+                <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0">
+                    <TR><TD ALIGN="CENTER"><FONT COLOR="#004F5E" POINT-SIZE="12"><B>KNX IoT</B></FONT></TD></TR>
+                    <TR><TD ALIGN="CENTER"><FONT COLOR="#007C92" POINT-SIZE="9">Native IPv6 devices</FONT></TD></TR>
+                </TABLE>
+            >
+        ];
+
+        iot_ip_entry [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="iot_bus"
+        ];
+
+        iot_bus_top [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="iot_bus"
+        ];
+
+        iot_bus_middle [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="iot_bus"
+        ];
+
+        iot_bus_lower [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true,
+            group="iot_bus"
+        ];
+
+        iot_gap_top [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true
+        ];
+
+        iot_gap_middle [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true
+        ];
+
+        iot_gap_lower [
+            shape=point,
+            style=invis,
+            width=0,
+            height=0,
+            fixedsize=true
+        ];
+
+        ethernet_device [
+            label="KNX IoT Point API device\n(Ethernet)",
+            width=2.35,
+            group="iot_devices"
+        ];
+
+        border_router [
+            label="Thread Border Router",
+            color="#004F5E",
+            fillcolor="#004F5E",
+            fontcolor="white",
+            penwidth=2,
+            width=2.35,
+            group="iot_devices"
+        ];
+
+        wifi_device [
+            label="KNX IoT Point API device\n(Wi-Fi)",
+            width=2.35,
+            group="iot_devices"
+        ];
+
+        thread_device [
+            label="KNX IoT Point API device\n(Thread)\nProvided by the KNX IoT add-on",
+            color="#00A9CE",
+            fillcolor="#00A9CE",
+            fontcolor="white",
+            penwidth=2,
+            width=2.35,
+            group="iot_devices"
+        ];
+
+        { rank=same; iot_bus_top; iot_gap_top; wifi_device; }
+        { rank=same; iot_bus_middle; iot_gap_middle; ethernet_device; }
+        { rank=same; iot_bus_lower; iot_gap_lower; border_router; }
+
+        { rank=same; iot_ip_entry; iot_title; }
+
+        iot_ip_entry -> iot_title [style=invis, weight=100];
+        iot_title -> wifi_device [style=invis, weight=100];
+        iot_ip_entry -> iot_bus_top [weight=100];
+        iot_bus_top -> iot_bus_middle [weight=100];
+        iot_bus_middle -> iot_bus_lower [weight=100];
+
+        iot_bus_top -> iot_gap_top [weight=100];
+        iot_gap_top -> wifi_device [weight=100];
+        iot_bus_middle -> iot_gap_middle [weight=100];
+        iot_gap_middle -> ethernet_device [weight=100];
+        iot_bus_lower -> iot_gap_lower [weight=100];
+        iot_gap_lower -> border_router [weight=100];
+        border_router -> thread_device;
+    }
+
+    { rank=same; ip_bus_classic; ip_bus_iot_router; ip_bus_center; ip_bus_api_server; ip_bus_iot; }
+    { rank=same; classic_ip_entry; integration_iot_router_entry; integration_title; integration_api_server_entry; iot_ip_entry; iot_title; }
+
+    main_title -> ip_router [style=invis, weight=100];
+    ip_router -> ip_bus_center [weight=100];
+    ip_bus_classic -> ip_bus_iot_router [weight=100];
+    ip_bus_iot_router -> ip_bus_center [weight=100];
+    ip_bus_center -> ip_bus_api_server [weight=100];
+    ip_bus_api_server -> ip_bus_iot [weight=100];
+
+    ip_bus_classic -> classic_ip_entry [weight=100];
+    ip_bus_iot_router -> integration_iot_router_entry [weight=100];
+    ip_bus_api_server -> integration_api_server_entry [weight=100];
+    ip_bus_iot -> iot_ip_entry [weight=100];
+}

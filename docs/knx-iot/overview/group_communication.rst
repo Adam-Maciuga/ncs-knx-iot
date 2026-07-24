@@ -49,21 +49,10 @@ Runtime message flow
 
 The following diagram shows the basic flow when a switch (sensor) toggles a light (actuator) bound to the same group address, as in the :ref:`knx_iot_samples`.
 
-.. msc::
-
-   hscale="1.2";
-
-   sensor [label="Sensor (LSSB)\nIA: 1.1.2"],
-   actuator [label="Actuator (LSAB)\nIA: 1.1.1"];
-
-   sensor rbox sensor [label="Button Pressed"];
-   sensor rbox sensor [label="Toggling 'soo' datapoint"];
-   sensor >> actuator [label="S-Mode group write to GA 1/1/1 (POST /k)\nOSCORE-protected CoAP, value = on"];
-   actuator rbox actuator [label="LED turns on"];
-   actuator rbox actuator [label="Mirroring 'soo' to 'ioo'"];
-   actuator >> sensor [label="Status announce on status GA 1/1/1 (POST /k)"];
-   sensor rbox sensor [label="Stores 'ioo' datapoint"];
-   sensor note actuator [label="S-Mode group communication flow between a sensor and an actuator"];
+.. graphviz:: images/knx_iot_group_communication.dot
+   :alt: S-Mode group communication flow between a sensor and an actuator
+   :align: center
+   :layout: dot
 
 At runtime, a device sends a group notification by POSTing to the ``/k`` resource of its targets (or to a multicast group), carrying the source address, target group address, service type (write, read, or response), and the datapoint value.
 Subscribers can also use CoAP *Observe* on ``/k`` to receive notifications.

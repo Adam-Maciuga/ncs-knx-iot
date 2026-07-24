@@ -1,0 +1,183 @@
+digraph knx_iot_group_communication {
+    graph [
+        layout=dot,
+        rankdir=TB,
+        bgcolor="transparent",
+        margin=0,
+        pad=0.15,
+        nodesep=1.6,
+        ranksep=0.42,
+        splines=polyline,
+        labelloc="b",
+        label=<
+            <FONT POINT-SIZE="9" COLOR="#004F5E"><I>S-Mode group communication flow between a sensor and an actuator</I></FONT>
+        >
+    ];
+
+    node [
+        shape=box,
+        style="rounded,filled",
+        fontname="Arial",
+        fontsize=10,
+        margin="0.14,0.09"
+    ];
+
+    edge [
+        fontname="Arial",
+        fontsize=9,
+        fontcolor="#004F5E"
+    ];
+
+    sensor [
+        group="sensor",
+        label="Sensor (LSSB)\nIA: 1.1.2",
+        width=2.5,
+        height=0.65,
+        color="#00A9CE",
+        fillcolor="#00A9CE",
+        fontcolor="white",
+        penwidth=2
+    ];
+
+    actuator [
+        group="actuator",
+        label="Actuator (LSAB)\nIA: 1.1.1",
+        width=2.5,
+        height=0.65,
+        color="#00A9CE",
+        fillcolor="#00A9CE",
+        fontcolor="white",
+        penwidth=2
+    ];
+
+    node [
+        width=2.5,
+        height=0.42,
+        color="#6E6E6E",
+        fillcolor="#6E6E6E",
+        fontcolor="white",
+        penwidth=1.5
+    ];
+
+    sensor_button [
+        group="sensor",
+        label="Button Pressed"
+    ];
+
+    sensor_toggle [
+        group="sensor",
+        label="Toggling 'soo' datapoint"
+    ];
+
+    actuator_led [
+        group="actuator",
+        label="LED turns on"
+    ];
+
+    actuator_mirror [
+        group="actuator",
+        label="Mirroring 'soo' to 'ioo'"
+    ];
+
+    sensor_store [
+        group="sensor",
+        label="Stores 'ioo' datapoint"
+    ];
+
+    node [
+        shape=point,
+        label="",
+        width=0.04,
+        height=0.04,
+        fixedsize=true,
+        style=filled,
+        color="#007C92",
+        fillcolor="#007C92"
+    ];
+
+    sensor_write [group="sensor"];
+    actuator_write [group="actuator"];
+    sensor_status [group="sensor"];
+    actuator_status [group="actuator"];
+
+    node [
+        shape=point,
+        label="",
+        width=0.01,
+        height=0.01,
+        fixedsize=true,
+        style=invis
+    ];
+
+    actuator_button [group="actuator"];
+    actuator_toggle [group="actuator"];
+    sensor_led [group="sensor"];
+    sensor_mirror [group="sensor"];
+    actuator_store [group="actuator"];
+
+    { rank=same; sensor; actuator; }
+    { rank=same; sensor_button; actuator_button; }
+    { rank=same; sensor_toggle; actuator_toggle; }
+    { rank=same; sensor_write; actuator_write; }
+    { rank=same; sensor_led; actuator_led; }
+    { rank=same; sensor_mirror; actuator_mirror; }
+    { rank=same; sensor_status; actuator_status; }
+    { rank=same; sensor_store; actuator_store; }
+
+    sensor -> actuator [style=invis, weight=100];
+    sensor_button -> actuator_button [style=invis, weight=100];
+    sensor_toggle -> actuator_toggle [style=invis, weight=100];
+    sensor_led -> actuator_led [style=invis, weight=100];
+    sensor_mirror -> actuator_mirror [style=invis, weight=100];
+    sensor_status -> actuator_status [style=invis, weight=100];
+    sensor_store -> actuator_store [style=invis, weight=100];
+
+    edge [
+        color="#71D0E3",
+        style=dashed,
+        arrowhead=none,
+        penwidth=1.4,
+        weight=50
+    ];
+
+    sensor -> sensor_button;
+    sensor_button -> sensor_toggle;
+    sensor_toggle -> sensor_write;
+    sensor_write -> sensor_led;
+    sensor_led -> sensor_mirror;
+    sensor_mirror -> sensor_status;
+    sensor_status -> sensor_store;
+
+    actuator -> actuator_button;
+    actuator_button -> actuator_toggle;
+    actuator_toggle -> actuator_write;
+    actuator_write -> actuator_led;
+    actuator_led -> actuator_mirror;
+    actuator_mirror -> actuator_status;
+    actuator_status -> actuator_store;
+
+    sensor_write -> actuator_write [
+        constraint=false,
+        color="#007C92",
+        style=solid,
+        arrowhead=normal,
+        arrowsize=0.8,
+        penwidth=1.8,
+        label=<
+            <FONT COLOR="#004F5E" POINT-SIZE="9"><B>S-Mode group write to GA 1/1/1 (POST /k)</B></FONT><BR/>
+            <FONT COLOR="#004F5E" POINT-SIZE="9">OSCORE-protected CoAP, value = on</FONT>
+        >
+    ];
+
+    actuator_status -> sensor_status [
+        constraint=false,
+        color="#007C92",
+        style=solid,
+        arrowhead=normal,
+        arrowsize=0.8,
+        penwidth=1.8,
+        label=<
+            <FONT COLOR="#004F5E" POINT-SIZE="9"><B>Status announce on status GA 1/1/1 (POST /k)</B></FONT>
+        >
+    ];
+}

@@ -15,7 +15,7 @@ digraph knx_iot_protocol_stack {
             <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" BGCOLOR="#71D0E3" ALIGN="CENTER">
                 <TR><TD ALIGN="CENTER">
                     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
-                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>KNX Application</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>KNX Application</B></FONT></TD></TR>
                         <TR><TD ALIGN="CENTER">
                             <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
                                 <TR>
@@ -26,10 +26,9 @@ digraph knx_iot_protocol_stack {
                         </TD></TR>
                     </TABLE>
                 </TD></TR>
-                <TR><TD HEIGHT="2"> </TD></TR>
                 <TR><TD ALIGN="CENTER">
                     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
-                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>KNX IoT Point API</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>KNX IoT Point API</B></FONT></TD></TR>
                         <TR><TD ALIGN="CENTER">
                             <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
                                 <TR>
@@ -41,10 +40,9 @@ digraph knx_iot_protocol_stack {
                         </TD></TR>
                     </TABLE>
                 </TD></TR>
-                <TR><TD HEIGHT="2"> </TD></TR>
                 <TR><TD ALIGN="CENTER">
                     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
-                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Data Encoding</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Data Encoding</B></FONT></TD></TR>
                         <TR><TD ALIGN="CENTER">
                             <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
                                 <TR>
@@ -56,23 +54,30 @@ digraph knx_iot_protocol_stack {
                         </TD></TR>
                     </TABLE>
                 </TD></TR>
-                <TR><TD HEIGHT="2"> </TD></TR>
                 <TR><TD ALIGN="CENTER">
                     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="4" CELLPADDING="0" WIDTH="400">
                         <TR>
                             <TD WIDTH="198" ALIGN="CENTER">
                                 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="198">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="198"><FONT COLOR="white" POINT-SIZE="12"><B>Application messaging</B></FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="198"><FONT COLOR="white" POINT-SIZE="12"><B>Application messaging</B></FONT></TD></TR>
                                     <TR><TD ALIGN="CENTER">
-                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
-                                            <TR><TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">CoAP</FONT></TD></TR>
+                                        <TABLE BORDER="0" WIDTH="198" CELLSPACING="0" CELLPADDING="0">
+                                            <TR>
+                                                <TD WIDTH="49" HEIGHT="1" FIXEDSIZE="TRUE"></TD>
+                                                <TD WIDTH="100" ALIGN="CENTER">
+                                                    <TABLE BORDER="0" BGCOLOR="#007C92" STYLE="rounded" CELLPADDING="2" WIDTH="100">
+                                                        <TR><TD ALIGN="CENTER" WIDTH="100"><FONT COLOR="white" POINT-SIZE="9">CoAP</FONT></TD></TR>
+                                                    </TABLE>
+                                                </TD>
+                                                <TD WIDTH="49" HEIGHT="1" FIXEDSIZE="TRUE"></TD>
+                                            </TR>
                                         </TABLE>
                                     </TD></TR>
                                 </TABLE>
                             </TD>
                             <TD WIDTH="198" ALIGN="CENTER">
                                 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="198">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="198"><FONT COLOR="white" POINT-SIZE="12"><B>Application Security</B></FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="198"><FONT COLOR="white" POINT-SIZE="12"><B>Application Security</B></FONT></TD></TR>
                                     <TR><TD ALIGN="CENTER">
                                         <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
                                             <TR>
@@ -86,58 +91,55 @@ digraph knx_iot_protocol_stack {
                         </TR>
                     </TABLE>
                 </TD></TR>
-                <TR><TD HEIGHT="2"> </TD></TR>
                 <TR><TD ALIGN="CENTER">
                     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
-                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Transport</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Transport</B></FONT></TD></TR>
                         <TR><TD ALIGN="CENTER">
                             <TABLE BORDER="0" WIDTH="400" CELLSPACING="0" CELLPADDING="0">
                                 <TR>
-                                    <TD WIDTH="175" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
-                                    <TD ALIGN="CENTER">
-                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
-                                            <TR><TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">UDP</FONT></TD></TR>
+                                    <TD WIDTH="150" HEIGHT="1" FIXEDSIZE="TRUE"></TD>
+                                    <TD WIDTH="100" ALIGN="CENTER">
+                                        <TABLE BORDER="0" BGCOLOR="#007C92" STYLE="rounded" CELLPADDING="2" WIDTH="100">
+                                            <TR><TD ALIGN="CENTER" WIDTH="100"><FONT COLOR="white" POINT-SIZE="9">UDP</FONT></TD></TR>
                                         </TABLE>
                                     </TD>
-                                    <TD WIDTH="175" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                    <TD WIDTH="150" HEIGHT="1" FIXEDSIZE="TRUE"></TD>
                                 </TR>
                             </TABLE>
                         </TD></TR>
                     </TABLE>
                 </TD></TR>
-                <TR><TD HEIGHT="2"> </TD></TR>
                 <TR><TD ALIGN="CENTER">
                     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
-                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Network</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>Network</B></FONT></TD></TR>
                         <TR><TD ALIGN="CENTER">
                             <TABLE BORDER="0" WIDTH="400" CELLSPACING="0" CELLPADDING="0">
                                 <TR>
-                                    <TD WIDTH="180" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
-                                    <TD ALIGN="CENTER">
-                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
-                                            <TR><TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">IPv6</FONT></TD></TR>
+                                    <TD WIDTH="150" HEIGHT="1" FIXEDSIZE="TRUE"></TD>
+                                    <TD WIDTH="100" ALIGN="CENTER">
+                                        <TABLE BORDER="0" BGCOLOR="#007C92" STYLE="rounded" CELLPADDING="2" WIDTH="100">
+                                            <TR><TD ALIGN="CENTER" WIDTH="100"><FONT COLOR="white" POINT-SIZE="9">IPv6</FONT></TD></TR>
                                         </TABLE>
                                     </TD>
-                                    <TD WIDTH="180" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                    <TD WIDTH="150" HEIGHT="1" FIXEDSIZE="TRUE"></TD>
                                 </TR>
                             </TABLE>
                         </TD></TR>
                     </TABLE>
                 </TD></TR>
-                <TR><TD HEIGHT="2"> </TD></TR>
                 <TR><TD ALIGN="CENTER">
                     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="5" BGCOLOR="#00A9CE" WIDTH="400">
-                        <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>IPv6 Link</B></FONT></TD></TR>
+                        <TR><TD ALIGN="CENTER" WIDTH="400"><FONT COLOR="white" POINT-SIZE="12"><B>IPv6 Link</B></FONT></TD></TR>
                         <TR><TD ALIGN="CENTER">
                             <TABLE BORDER="0" WIDTH="400" CELLSPACING="0" CELLPADDING="0">
                                 <TR>
-                                    <TD WIDTH="112" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
-                                    <TD WIDTH="176" ALIGN="CENTER" FIXEDSIZE="TRUE">
-                                        <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
-                                            <TR><TD BGCOLOR="#007C92" STYLE="rounded"><FONT COLOR="white" POINT-SIZE="9">Thread (IEEE 802.15.4)</FONT></TD></TR>
+                                    <TD WIDTH="100" HEIGHT="1" FIXEDSIZE="TRUE"></TD>
+                                    <TD WIDTH="200" ALIGN="CENTER">
+                                        <TABLE BORDER="0" BGCOLOR="#007C92" STYLE="rounded" CELLPADDING="2" WIDTH="200">
+                                            <TR><TD ALIGN="CENTER" WIDTH="200"><FONT COLOR="white" POINT-SIZE="9">Thread (IEEE 802.15.4)</FONT></TD></TR>
                                         </TABLE>
                                     </TD>
-                                    <TD WIDTH="112" HEIGHT="1" FIXEDSIZE="TRUE"><FONT>&#160;</FONT></TD>
+                                    <TD WIDTH="100" HEIGHT="1" FIXEDSIZE="TRUE"></TD>
                                 </TR>
                             </TABLE>
                         </TD></TR>
