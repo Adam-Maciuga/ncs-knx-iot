@@ -13,37 +13,47 @@ digraph knx_iot_component_overview {
             <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4" ALIGN="CENTER">
                 <TR>
                     <TD VALIGN="TOP" ALIGN="LEFT">
-                        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0" WIDTH="108">
+                        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0" WIDTH="136">
                             <TR><TD VALIGN="TOP" ALIGN="LEFT">
-                        <TABLE BORDER="2" CELLBORDER="0" COLOR="#00A9CE" CELLPADDING="4" CELLSPACING="0" WIDTH="108" HEIGHT="100" FIXEDSIZE="TRUE">
+                        <TABLE BORDER="2" CELLBORDER="0" COLOR="#00A9CE" CELLPADDING="3" CELLSPACING="0" WIDTH="136">
                             <TR>
-                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#00A9CE"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD WIDTH="4" FIXEDSIZE="TRUE"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD VALIGN="MIDDLE"><FONT POINT-SIZE="9" COLOR="#004F5E">nRF Connect SDK</FONT></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#00A9CE"></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD VALIGN="MIDDLE" ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#004F5E">nRF Connect SDK</FONT></TD>
+                                <TD WIDTH="5"></TD>
                             </TR>
                             <TR>
-                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#6E6E6E"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD WIDTH="4" FIXEDSIZE="TRUE"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD VALIGN="MIDDLE"><FONT POINT-SIZE="9" COLOR="#004F5E">Zephyr</FONT></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#6E6E6E"></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD VALIGN="MIDDLE" ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#004F5E">Zephyr</FONT></TD>
+                                <TD WIDTH="5"></TD>
                             </TR>
                             <TR>
-                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#71D0E3"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD WIDTH="4" FIXEDSIZE="TRUE"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD VALIGN="MIDDLE"><FONT POINT-SIZE="9" COLOR="#004F5E">Nordic Component</FONT></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#71D0E3"></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD VALIGN="MIDDLE" ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#004F5E">Nordic Component</FONT></TD>
+                                <TD WIDTH="5"></TD>
                             </TR>
                             <TR>
-                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#004F5E"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD WIDTH="4" FIXEDSIZE="TRUE"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD VALIGN="MIDDLE"><FONT POINT-SIZE="9" COLOR="#004F5E">Third-party</FONT></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#004F5E"></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD VALIGN="MIDDLE" ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#004F5E">Third-party</FONT></TD>
+                                <TD WIDTH="5"></TD>
                             </TR>
                             <TR>
-                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#E6B800"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD WIDTH="4" FIXEDSIZE="TRUE"><FONT POINT-SIZE="1"> </FONT></TD>
-                                <TD VALIGN="MIDDLE"><FONT POINT-SIZE="9" COLOR="#004F5E">KNX (Third-party)</FONT></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD WIDTH="10" HEIGHT="10" FIXEDSIZE="TRUE" BGCOLOR="#E6B800"></TD>
+                                <TD WIDTH="5"></TD>
+                                <TD VALIGN="MIDDLE" ALIGN="LEFT"><FONT POINT-SIZE="9" COLOR="#004F5E">KNX (Third-party)</FONT></TD>
+                                <TD WIDTH="5"></TD>
                             </TR>
                         </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="1"> </TD></TR>
+                            <TR><TD HEIGHT="250"></TD></TR>
                         </TABLE>
                     </TD>
                     <TD WIDTH="10"> </TD>
@@ -51,19 +61,19 @@ digraph knx_iot_component_overview {
                         <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0" WIDTH="210">
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#00A9CE" STYLE="rounded" CELLPADDING="4" WIDTH="210">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="210"><FONT COLOR="white" POINT-SIZE="10">User Application</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="210"><FONT COLOR="white" POINT-SIZE="10">User Application</FONT></TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
+                            <TR><TD WIDTH="210" HEIGHT="8" FIXEDSIZE="TRUE"></TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#00A9CE" STYLE="rounded" CELLPADDING="4" WIDTH="210">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="210"><FONT COLOR="white" POINT-SIZE="10">KNX Integration Layer</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="210"><FONT COLOR="white" POINT-SIZE="10">KNX Integration Layer</FONT></TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
+                            <TR><TD WIDTH="210" HEIGHT="8" FIXEDSIZE="TRUE"></TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="2" CELLBORDER="0" BGCOLOR="#FFF8D6" COLOR="#E6B800" CELLPADDING="5" WIDTH="210">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="210"><FONT COLOR="#004F5E" POINT-SIZE="10"><B>KNX IoT Point API Stack</B></FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="210"><FONT COLOR="#004F5E" POINT-SIZE="10"><B>KNX IoT Point API Stack</B></FONT></TD></TR>
                                     <TR><TD ALIGN="CENTER">
                                         <TABLE BORDER="0" BGCOLOR="#6E6E6E" STYLE="rounded" CELLPADDING="3">
                                             <TR><TD ALIGN="CENTER"><FONT COLOR="white" POINT-SIZE="9">Zephyr Integration</FONT></TD></TR>
@@ -71,10 +81,10 @@ digraph knx_iot_component_overview {
                                     </TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
+                            <TR><TD WIDTH="210" HEIGHT="8" FIXEDSIZE="TRUE"></TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="2" CELLBORDER="0" BGCOLOR="#004F5E" COLOR="#004F5E" CELLPADDING="5" WIDTH="210">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="210"><FONT COLOR="white" POINT-SIZE="10"><B>OpenThread Stack</B></FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="210"><FONT COLOR="white" POINT-SIZE="10"><B>OpenThread Stack</B></FONT></TD></TR>
                                     <TR><TD ALIGN="CENTER">
                                         <TABLE BORDER="0" BGCOLOR="#6E6E6E" STYLE="rounded" CELLPADDING="3">
                                             <TR><TD ALIGN="CENTER"><FONT COLOR="white" POINT-SIZE="9">Zephyr Integration</FONT></TD></TR>
@@ -82,40 +92,40 @@ digraph knx_iot_component_overview {
                                     </TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
+                            <TR><TD WIDTH="210" HEIGHT="8" FIXEDSIZE="TRUE"></TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#71D0E3" STYLE="rounded" CELLPADDING="4" WIDTH="210">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="210"><FONT COLOR="#004F5E" POINT-SIZE="10">nRF IEEE 802.15.4 radio driver</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="210"><FONT COLOR="#004F5E" POINT-SIZE="10">nRF IEEE 802.15.4 radio driver</FONT></TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
+                            <TR><TD WIDTH="210" HEIGHT="8" FIXEDSIZE="TRUE"></TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#71D0E3" STYLE="rounded" CELLPADDING="4" WIDTH="210">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="210"><FONT COLOR="#004F5E" POINT-SIZE="10">Multiprotocol Service Layer (MPSL)</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="210"><FONT COLOR="#004F5E" POINT-SIZE="10">Multiprotocol Service Layer (MPSL)</FONT></TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
+                            <TR><TD WIDTH="210" HEIGHT="8" FIXEDSIZE="TRUE"></TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#71D0E3" STYLE="rounded" CELLPADDING="4" WIDTH="210">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="210"><FONT COLOR="#004F5E" POINT-SIZE="10">Nordic SoC (nRF54L15 / nRF54LM20A/B)</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="210"><FONT COLOR="#004F5E" POINT-SIZE="10">Nordic SoC (nRF54L15 / nRF54LM20A/B)</FONT></TD></TR>
                                 </TABLE>
                             </TD></TR>
                         </TABLE>
                     </TD>
                     <TD WIDTH="10"> </TD>
                     <TD VALIGN="TOP" ALIGN="CENTER">
+                        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="0" WIDTH="180">
+                            <TR><TD VALIGN="TOP" ALIGN="CENTER">
                         <TABLE BORDER="2" CELLBORDER="0" COLOR="#00A9CE" CELLPADDING="5" WIDTH="180">
-                            <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="168"><FONT COLOR="#004F5E" POINT-SIZE="10"><B>Platform Services</B></FONT></TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
+                            <TR><TD ALIGN="CENTER" WIDTH="168"><FONT COLOR="#004F5E" POINT-SIZE="10"><B>Platform Services</B></FONT></TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#6E6E6E" STYLE="rounded" CELLPADDING="4" WIDTH="168">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10">Zephyr RTOS Kernel</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10">Zephyr RTOS Kernel</FONT></TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#6E6E6E" CELLPADDING="5" WIDTH="168">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10"><B>Zephyr APIs</B></FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10"><B>Zephyr APIs</B></FONT></TD></TR>
                                     <TR><TD ALIGN="CENTER">
                                         <TABLE BORDER="0" CELLSPACING="3" CELLPADDING="2">
                                             <TR>
@@ -126,23 +136,22 @@ digraph knx_iot_component_overview {
                                     </TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#004F5E" STYLE="rounded" CELLPADDING="4" WIDTH="168">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10">mbedTLS</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10">mbedTLS</FONT></TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#6E6E6E" STYLE="rounded" CELLPADDING="4" WIDTH="168">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10">Settings/NVS/Flash</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10">Settings/NVS/Flash</FONT></TD></TR>
                                 </TABLE>
                             </TD></TR>
-                            <TR><TD HEIGHT="3"> </TD></TR>
                             <TR><TD ALIGN="CENTER">
                                 <TABLE BORDER="0" BGCOLOR="#00A9CE" STYLE="rounded" CELLPADDING="4" WIDTH="168">
-                                    <TR><TD ALIGN="CENTER" FIXEDSIZE="TRUE" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10">Crypto Backends</FONT></TD></TR>
+                                    <TR><TD ALIGN="CENTER" WIDTH="168"><FONT COLOR="white" POINT-SIZE="10">Crypto Backends</FONT></TD></TR>
                                 </TABLE>
+                            </TD></TR>
+                        </TABLE>
                             </TD></TR>
                         </TABLE>
                     </TD>
