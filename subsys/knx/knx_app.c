@@ -29,10 +29,10 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/atomic.h>
 
-#include "dns-sd.h"
+#include "port/dns-sd.h"
 #include "oc_api.h"
-#include "oc_clock.h"
-#include "oc_connectivity.h"
+#include "port/oc_clock.h"
+#include "port/oc_connectivity.h"
 #include "oc_core_res.h"
 
 LOG_MODULE_REGISTER(knx_app, LOG_LEVEL_INF);
@@ -91,11 +91,11 @@ static void knx_thread_entry(void *p1, void *p2, void *p3)
 
 	const oc_device_info_t *device = oc_core_get_device_info();
 
-	LOG_DBG("serial number: %s", oc_string(device->serialnumber));
+	LOG_DBG("serial number: %s", device->serialnumber);
 	LOG_DBG("host name: %s", oc_string(device->iot_hostname));
 
 	(void)oc_connectivity_get_endpoints();
-	knx_publish_service(oc_string(device->serialnumber), device->iid, device->ia, device->pm);
+	knx_dns_sd_update_service(device->serialnumber, device->iid, device->ia, device->pm);
 	LOG_INF("KNX service published; entering event loop");
 
 	/* Network is up and the service is announced: light the shared status LED. */

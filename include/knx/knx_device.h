@@ -42,6 +42,10 @@ extern "C" {
 /* Sentinel for knx_datapoint_t.mirror_to (no mirroring). */
 #define KNX_DP_NONE (-1)
 
+/* Access method flags for knx_datapoint_t.methods. */
+#define KNX_DP_GET (1U << 0)
+#define KNX_DP_PUT (1U << 1)
+
 /* The light switch sample currently only requires boolean data; the code is prepared for easy
  * extension to other types in the future.
  */
@@ -66,7 +70,7 @@ typedef struct {
 
 	uint16_t id; /* KNX_DP_ID(channel, point), unique within the device */
 
-	uint8_t methods;	   /* OC_GET and/or OC_PUT */
+	uint8_t methods;	   /* KNX_DP_GET and/or KNX_DP_PUT */
 	oc_acl_mask_t acl;	   /* access scope for the handler(s) */
 	oc_interface_mask_t iface; /* interface for the handler(s) */
 	int32_t mirror_to;	   /* datapoint id mirrored + announced on write, or

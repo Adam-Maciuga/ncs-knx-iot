@@ -143,7 +143,7 @@ void knx_datapoint_transmit(uint16_t id)
 	const knx_datapoint_t *dp = knx_datapoint_by_id(id);
 
 	if (dp != NULL) {
-		oc_send_s_mode_mc_or_uc_message(OC_SENDER_MULTICAST_SCOPE, dp->path, 'w');
+		oc_send_s_mode_mc_or_uc_message(KNX_MULTICAST_SCOPE, dp->path, 'w');
 	} else {
 		LOG_ERR("transmit requested for unknown datapoint id 0x%04x", id);
 	}
@@ -199,7 +199,7 @@ void knx_get_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 				char serial_number[65];
 
 				(void)snprintf(serial_number, 65, "knx://sn:%s%s",
-					       oc_string(device->serialnumber),
+					       device->serialnumber,
 					       oc_string(request->resource->uri));
 				oc_rep_i_set_text_string(root, 0, serial_number);
 				error_state = false;
@@ -397,7 +397,7 @@ void knx_put_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 				if (knx_datapoint_get(dp->id, &value) == 0 &&
 				    knx_datapoint_set(mirror->id, value) == 0) {
 					LOG_DBG("announce status %s", mirror->path);
-					oc_send_s_mode_mc_or_uc_message(OC_SENDER_MULTICAST_SCOPE,
+					oc_send_s_mode_mc_or_uc_message(KNX_MULTICAST_SCOPE,
 									mirror->path, 'w');
 				} else {
 					LOG_ERR("PUT %s failed: could not mirror value to "
@@ -442,12 +442,12 @@ void register_resources(void)
 							      fb->num_datapoints);
 			oc_resource_set_properties(resource, OC_DISCOVERABLE + OC_OBSERVABLE);
 
-			if (dp->methods & OC_GET) {
-				oc_resource_set_request_handler(resource, OC_GET, knx_get_dp, dp,
+			if (dp->methods & KNX_DP_GET) {
+				oc_resource_set_request_handler(resource, COAP_GET, knx_get_dp, dp,
 								dp->acl, dp->iface);
 			}
-			if (dp->methods & OC_PUT) {
-				oc_resource_set_request_handler(resource, OC_PUT, knx_put_dp, dp,
+			if (dp->methods & KNX_DP_PUT) {
+				oc_resource_set_request_handler(resource, COAP_PUT, knx_put_dp, dp,
 								dp->acl, dp->iface);
 			}
 
