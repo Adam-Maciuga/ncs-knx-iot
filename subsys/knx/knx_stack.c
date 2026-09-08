@@ -102,6 +102,7 @@ static int knx_stack_init_device(void)
 	oc_core_set_device_hwv(&hw_version);
 	oc_core_set_and_store_device_fwv(&fw_version);
 
+	oc_core_set_device_res();
 
 	oc_core_set_device_mid(id->mid);
 	oc_core_set_device_hwt(id->hw_type);
