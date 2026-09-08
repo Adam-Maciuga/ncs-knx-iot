@@ -6,13 +6,18 @@
 
 if KNX_IOT_ADD_ON
 
-# Silence libknx logs. Level 4 (DBG) is only in range when KNXIOT_DEBUG is set,
-# and level 0 keeps the stack's OC_PRINT output out of the build entirely.
 config KNXIOT_DEBUG
 	default y if KNX_VERBOSE_STACK_LOGS
 
 config KNXIOT_LOG_LEVEL
 	default 4 if KNX_VERBOSE_STACK_LOGS
 	default 0
+
+# Openthread implementation uses only a single socket
+# The default value of 0, makes the socket bind to a ephemeral port
+# This leads to a mismatch between ports, setting it to 5683 (CoAP port)
+# Allows the device to receive the messages
+config KNX_UNICAST_PORT
+	default 5683
 
 endif # KNX_IOT_ADD_ON
