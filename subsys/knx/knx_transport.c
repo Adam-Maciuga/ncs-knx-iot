@@ -20,12 +20,17 @@ static K_SEM_DEFINE(network_ready_sem, 0, 1);
 bool knx_is_network_connected(void)
 {
 	otInstance *instance = openthread_get_default_instance();
+	bool connected;
 
 	if (instance == NULL) {
 		return false;
 	}
 
-	return (otThreadGetDeviceRole(instance) >= OT_DEVICE_ROLE_CHILD);
+	openthread_mutex_lock();
+	connected = (otThreadGetDeviceRole(instance) >= OT_DEVICE_ROLE_CHILD);
+	openthread_mutex_unlock();
+
+	return connected;
 }
 
 static void ot_state_changed(otChangedFlags flags, void *user_data)
