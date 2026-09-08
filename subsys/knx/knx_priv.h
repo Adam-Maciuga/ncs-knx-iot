@@ -28,12 +28,8 @@ void knx_get_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 void knx_put_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *user_data);
 void knx_restart_handler(void *data);
 
-/*
- * Helpers required by compiled libknx sources (port/zephyr/knx_shell.c,
- * security/oc_spake2plus.c)
- */
-char *app_get_password(void);
-void app_str_to_upper(char *str);
+/* Helper required by compiled libknx sources (port/zephyr/knx_shell.c). */
+const char *app_get_password(void);
 
 /* Shared CBOR helper used by the datapoint GET handler. */
 void add_all_interface_short_urns_for_a_resource(const oc_resource_t *resource);

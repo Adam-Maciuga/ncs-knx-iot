@@ -6,8 +6,7 @@
 
 zephyr_library()
 
-# Device-agnostic application layer (replaces the stack's bundled demo apps,
-# which are disabled via CONFIG_KNXIOT_LIB_DEMO_APPS=n in Kconfig.defconfig).
+# Device-agnostic application layer
 zephyr_library_sources(knx_app.c)
 zephyr_library_sources(knx_stack.c)
 zephyr_library_sources(knx_resources.c)

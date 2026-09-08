@@ -17,9 +17,7 @@ manifest:
       import: true
 
     - name: sdk-knx-iot-stack
-      revision: zephyr_port
+      revision: pull/5/head
       remote: ncs
       repo-path: sdk-knx-iot-point-api-stack
       path: modules/lib/sdk-knx-iot-stack
-      submodules:
-        - path: deps/tinycbor

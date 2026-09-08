@@ -19,7 +19,7 @@
 #include "oc_knx_dev.h"
 #include "oc_knx_fp.h"
 #include "oc_knx_sec.h"
-#include "oc_storage.h"
+#include "port/oc_storage.h"
 
 #include <errno.h>
 #include <stdlib.h>
@@ -98,18 +98,28 @@ static int setup_hardcoded_got(uint32_t ga, const char *href, oc_cflag_mask_t cf
 	return 0;
 }
 
-static int setup_hardcoded_access_token(const knx_preset_t *preset)
+/* An unused access token entry is one whose id is still the empty string. */
+static oc_auth_at_t *find_empty_at_entry(void)
 {
-	const int idx = oc_core_find_at_entry_empty_slot();
+	const int table_size = oc_core_get_at_table_size();
 
-	if (idx < 0) {
-		return -ENOMEM;
+	for (int i = 0; i < table_size; i++) {
+		oc_auth_at_t *at = oc_get_auth_at_entry(i);
+
+		if (at != NULL && oc_string_len(at->id) == 0) {
+			return at;
+		}
 	}
 
-	oc_auth_at_t *at = oc_get_auth_at_entry(idx);
+	return NULL;
+}
+
+static int setup_hardcoded_access_token(const knx_preset_t *preset)
+{
+	oc_auth_at_t *at = find_empty_at_entry();
 
 	if (at == NULL) {
-		return -EINVAL;
+		return -ENOMEM;
 	}
 
 	oc_new_string(&at->id, "hardcoded-at-0", 14);
@@ -131,7 +141,6 @@ static int setup_hardcoded_access_token(const knx_preset_t *preset)
 
 int knx_apply_presets(const knx_preset_t *preset)
 {
-	bool pm = false;
 	int ret;
 
 	if (preset == NULL) {
@@ -149,8 +158,7 @@ int knx_apply_presets(const knx_preset_t *preset)
 
 	oc_device_info_t *device = oc_core_get_device_info();
 
-	device->pm = pm;
-	oc_storage_write(KNX_STORAGE_PM, (uint8_t *)&pm, sizeof(pm));
+	device->pm = false;
 
 	ret = setup_hardcoded_got(preset->ga, preset->got_href,
 				  (oc_cflag_mask_t)preset->got_cflags);

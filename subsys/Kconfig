@@ -7,7 +7,6 @@
 menuconfig KNX_IOT_ADD_ON
 	bool "KNX IoT stack"
 	select KNXIOT_LIB
-	select OC_USE_KNX_PORT_LAYER_ENABLED
 	# PSA Crypto surface used by SPAKE2+ / ECDSA enrollment.
 	select REQUIRES_FULL_LIBC
 	select FPU
@@ -53,6 +52,14 @@ config KNX_THREAD_PRIORITY
 	  event loop (oc_main_poll). A preemptible (positive) priority is the
 	  usual choice so networking and system work can run alongside it. The
 	  thread's stack size is taken from KNX_THREAD_STACK_SIZE.
+
+config KNX_THREAD_STACK_SIZE
+	int "KNX event-loop thread stack size"
+	default 12288
+	help
+	  Stack size of the KNX worker thread that runs the stack event loop
+	  (oc_main_poll). The loop reaches into the stack's CoAP and OSCORE
+	  paths, whose buffers dominate the requirement.
 
 config KNX_VERBOSE_STACK_LOGS
 	bool "Enable verbose libknx stack logging"
