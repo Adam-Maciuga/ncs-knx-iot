@@ -19,6 +19,7 @@ For architecture and integration details, see :ref:`knx_iot_addon`.
    knx-iot/overview/index
    knx-iot/addon
    setup
+   migration
    knx-iot/samples
    config
    software_maturity
