@@ -11,4 +11,5 @@ The most relevant changes that are present on the main branch of the |addon|, as
 Changelog
 *********
 
-|no_changes_yet_note|
+Updated KNX IoT Point API Stack to version 1.1.0.
+For information about how to adapt your applications, see the :ref:`KNX IoT migration guide <knx_iot_migration>`.
