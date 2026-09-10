@@ -6,6 +6,8 @@ Release notes
 For a detailed list on new features for a specific |addon| release, refer to the respective release notes documents.
 
 The |addon| v\ |addon_version| is compatible with |NCS| v\ |ncs_version| and uses `KNX IoT Point API Stack`_ v\ |knx-iot_version|.
+For migration details between Point API stack revisions and addon versions, see the
+:ref:`KNX IoT migration guide <knx_iot_migration>`.
 
 The following table contains a full list of |addon| releases and related |NCS| and `KNX IoT Point API Stack`_ versions.
 
