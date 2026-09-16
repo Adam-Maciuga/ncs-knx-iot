@@ -12,7 +12,9 @@ zephyr_library_sources(knx_stack.c)
 zephyr_library_sources(knx_resources.c)
 zephyr_library_sources(knx_transport.c)
 
-# Shared board support (status LED, button dispatch, future factory reset).
+# Board UI
+zephyr_library_sources_ifdef(CONFIG_DK_LIBRARY knx_leds.c)
+zephyr_library_sources_ifdef(CONFIG_DK_LIBRARY knx_buttons.c)
 zephyr_library_sources_ifdef(CONFIG_DK_LIBRARY knx_board.c)
 
 # Hardcoded "automatic" commissioning mechanism (parameterised by the device).
