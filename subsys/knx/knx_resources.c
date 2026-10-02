@@ -15,18 +15,83 @@
 #include "knx_priv.h"
 
 #include <errno.h>
+#include <stdio.h>
 
 #include <zephyr/logging/log.h>
+#include <zephyr/settings/settings.h>
+#include <zephyr/sys_clock.h>
 
 #include "api/oc_knx_fp.h"
 #include "oc_api.h"
 #include "oc_core_res.h"
 #include "oc_helpers.h"
+#include "oc_knx.h"
 #include "oc_knx_client.h"
 
 LOG_MODULE_REGISTER(knx_resources, LOG_LEVEL_INF);
 
+/* Settings subtree for persisted datapoint values, keyed by datapoint id. Kept
+ * apart from the stack's own "knx" subtree.
+ */
+#define KNX_DP_SETTINGS_PREFIX	 "knx_dp"
+#define KNX_DP_SETTINGS_KEY_SIZE sizeof(KNX_DP_SETTINGS_PREFIX "/ffff")
+
 static const knx_device_t *g_device;
+
+#if defined(CONFIG_KNXIOT_CLIENT)
+static void init_read_finish(knx_datapoint_t *dp, bool received);
+#endif
+
+/* Number of stored bytes for each datapoint type, or 0 if the type cannot be
+ * persisted.
+ */
+static size_t datapoint_value_size(knx_dpt_kind_t kind)
+{
+	switch (kind) {
+	case KNX_DPT_BOOL:
+		return sizeof(bool);
+	case KNX_DPT_VALUE_2_UCOUNT:
+		return sizeof(uint16_t);
+	default:
+		return 0;
+	}
+}
+
+static void datapoint_settings_key(const knx_datapoint_t *dp, char *key, size_t key_size)
+{
+	(void)snprintf(key, key_size, KNX_DP_SETTINGS_PREFIX "/%04x", dp->id);
+}
+
+static void datapoint_store(const knx_datapoint_t *dp)
+{
+	const size_t size = datapoint_value_size(dp->value.kind);
+	char key[KNX_DP_SETTINGS_KEY_SIZE];
+
+	if (size == 0) {
+		LOG_ERR("cannot persist %s: unsupported datapoint type %d", dp->path,
+			dp->value.kind);
+		return;
+	}
+
+	datapoint_settings_key(dp, key, sizeof(key));
+
+	const int ret = settings_save_one(key, &dp->value.data, size);
+
+	if (ret != 0) {
+		LOG_ERR("failed to persist %s: %d", dp->path, ret);
+	}
+}
+
+knx_persist_action_t knx_persist_always(const knx_datapoint_t *dp,
+					const knx_datapoint_value_t *old_value,
+					const knx_datapoint_value_t *new_value)
+{
+	(void)dp;
+	(void)old_value;
+	(void)new_value;
+
+	return KNX_PERSIST_STORE;
+}
 
 static inline bool knx_m_value_is(const char *value, size_t value_len, const char *lit)
 {
@@ -70,6 +135,13 @@ knx_datapoint_t *knx_datapoint_by_id(uint16_t id)
 	return NULL;
 }
 
+bool knx_datapoint_init_read_pending(uint16_t id)
+{
+	const knx_datapoint_t *dp = knx_datapoint_by_id(id);
+
+	return dp != NULL && dp->init_read_pending;
+}
+
 int knx_datapoint_get(uint16_t id, knx_datapoint_value_t *value)
 {
 	if (value == NULL) {
@@ -103,7 +175,13 @@ int knx_datapoint_set(uint16_t id, knx_datapoint_value_t value)
 		return -EINVAL;
 	}
 
+	const knx_datapoint_value_t old_value = dp->value;
+
 	dp->value = value;
+
+	if (dp->persist != NULL && dp->persist(dp, &old_value, &value) == KNX_PERSIST_STORE) {
+		datapoint_store(dp);
+	}
 
 	return 0;
 }
@@ -412,6 +490,10 @@ void knx_put_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 				return;
 			}
 
+#if defined(CONFIG_KNXIOT_CLIENT)
+			init_read_finish(dp, true);
+#endif
+
 			if (g_device->on_write != NULL) {
 				g_device->on_write(dp);
 			}
@@ -520,26 +602,147 @@ void register_resources(void)
 	}
 }
 
+static void for_each_datapoint(void (*visit)(knx_datapoint_t *dp))
+{
+	for (size_t parameter_idx = 0; parameter_idx < g_device->num_parameters; parameter_idx++) {
+		visit(&g_device->parameters[parameter_idx]);
+	}
+
+	for (size_t fb_idx = 0; fb_idx < g_device->num_functional_blocks; fb_idx++) {
+		const knx_functional_block_t *fb = &g_device->functional_blocks[fb_idx];
+
+		for (size_t dp_idx = 0; dp_idx < fb->num_datapoints; dp_idx++) {
+			visit(&fb->datapoints[dp_idx]);
+		}
+	}
+}
+
+/* Assigns the default value directly, bypassing the persistence policy. */
 static void reset_datapoint(knx_datapoint_t *dp)
 {
 	switch (dp->value.kind) {
 	case KNX_DPT_BOOL:
-		(void)knx_datapoint_set(dp->id, (knx_datapoint_value_t){
-							.kind = KNX_DPT_BOOL,
-							.data.boolean = false,
-						});
+		dp->value.data.boolean = false;
 		break;
 	case KNX_DPT_VALUE_2_UCOUNT:
-		(void)knx_datapoint_set(dp->id, (knx_datapoint_value_t){
-							.kind = KNX_DPT_VALUE_2_UCOUNT,
-							.data.value_2_ucount = 0,
-						});
+		dp->value.data.value_2_ucount = 0;
 		break;
 	default:
 		break;
 	}
 }
 
+/* Copies a persisted value onto its mirror target without announcing it. */
+static void sync_mirror(const knx_datapoint_t *dp)
+{
+	if (dp->mirror_to == KNX_DP_NONE) {
+		return;
+	}
+
+	knx_datapoint_t *mirror = knx_datapoint_by_id((uint16_t)dp->mirror_to);
+
+	if (mirror == NULL || mirror->value.kind != dp->value.kind) {
+		LOG_ERR("cannot mirror %s onto datapoint id 0x%04x", dp->path,
+			(uint16_t)dp->mirror_to);
+		return;
+	}
+
+	mirror->value = dp->value;
+}
+
+static void load_datapoint(knx_datapoint_t *dp)
+{
+	if (dp->persist == NULL) {
+		return;
+	}
+
+	const size_t size = datapoint_value_size(dp->value.kind);
+	knx_datapoint_data_t data = {0};
+	char key[KNX_DP_SETTINGS_KEY_SIZE];
+
+	datapoint_settings_key(dp, key, sizeof(key));
+
+	const ssize_t ret = settings_load_one(key, &data, sizeof(data));
+
+	if (ret == 0) {
+		return;
+	}
+
+	if (ret < 0 || (size_t)ret != size) {
+		LOG_ERR("ignoring stored value of %s: %d", dp->path, (int)ret);
+		return;
+	}
+
+	dp->value.data = data;
+	sync_mirror(dp);
+	LOG_DBG("restored %s", dp->path);
+}
+
+void knx_datapoints_load(void)
+{
+	if (g_device == NULL) {
+		LOG_ERR("datapoint load called before KNX device registration");
+		return;
+	}
+
+	for_each_datapoint(load_datapoint);
+}
+
+static void factory_reset_datapoint(knx_datapoint_t *dp)
+{
+	if (dp->persist == NULL) {
+		return;
+	}
+
+	char key[KNX_DP_SETTINGS_KEY_SIZE];
+
+	datapoint_settings_key(dp, key, sizeof(key));
+
+	const int ret = settings_delete(key);
+
+	if (ret != 0) {
+		LOG_ERR("failed to erase stored value of %s: %d", dp->path, ret);
+	}
+
+	reset_datapoint(dp);
+	sync_mirror(dp);
+
+	if (g_device->on_write != NULL) {
+		g_device->on_write(dp);
+	}
+}
+
+void knx_datapoints_factory_reset(void)
+{
+	if (g_device == NULL) {
+		LOG_ERR("datapoint factory reset called before KNX device registration");
+		return;
+	}
+
+	for_each_datapoint(factory_reset_datapoint);
+
+#if defined(CONFIG_KNXIOT_CLIENT)
+	knx_init_read_cancel();
+#endif
+}
+
+static void restart_datapoint(knx_datapoint_t *dp)
+{
+	if (dp->persist == NULL) {
+		reset_datapoint(dp);
+	}
+}
+
+static void restart_sync_mirror(knx_datapoint_t *dp)
+{
+	if (dp->persist != NULL) {
+		sync_mirror(dp);
+	}
+}
+
+/* Persisted datapoints keep their value across a KNX restart, as across a
+ * reboot. Their mirror targets are rebuilt after the reset of the others.
+ */
 void knx_restart_handler(void *data)
 {
 	(void)data;
@@ -549,15 +752,137 @@ void knx_restart_handler(void *data)
 		return;
 	}
 
-	for (size_t parameter_idx = 0; parameter_idx < g_device->num_parameters; parameter_idx++) {
-		reset_datapoint(&g_device->parameters[parameter_idx]);
-	}
+	for_each_datapoint(restart_datapoint);
+	for_each_datapoint(restart_sync_mirror);
+}
 
-	for (size_t fb_idx = 0; fb_idx < g_device->num_functional_blocks; fb_idx++) {
-		const knx_functional_block_t *fb = &g_device->functional_blocks[fb_idx];
+#if defined(CONFIG_KNXIOT_CLIENT)
+static size_t init_read_pending_count;
+static uint8_t init_read_retries_left;
+static bool init_read_needed;
 
-		for (size_t dp_idx = 0; dp_idx < fb->num_datapoints; dp_idx++) {
-			reset_datapoint(&fb->datapoints[dp_idx]);
-		}
+/* Same selection as the stack's read on init: the group object of the
+ * datapoint's sending group address must have the I-flag.
+ */
+static void init_read_mark(knx_datapoint_t *dp)
+{
+	const oc_group_object_table_t *go = oc_core_find_sending_ga_in_pos_zero_for_href(dp->path);
+
+	dp->init_read_pending = go != NULL && (go->cflags & OC_CFLAG_INIT);
+	if (dp->init_read_pending) {
+		init_read_pending_count++;
 	}
 }
+
+static void init_read_finish(knx_datapoint_t *dp, bool received)
+{
+	if (!dp->init_read_pending) {
+		return;
+	}
+
+	dp->init_read_pending = false;
+	init_read_pending_count--;
+
+	if (g_device->on_init_read != NULL) {
+		g_device->on_init_read(dp, received);
+	}
+}
+
+static void init_read_give_up(knx_datapoint_t *dp)
+{
+	init_read_finish(dp, false);
+}
+
+/* The stack sends one request per KNX_READ_ON_INIT_DELAY_MS, starting one
+ * delay after the scan begins. Wait for the last one plus the response time.
+ */
+static oc_clock_time_t init_read_wait_ticks(void)
+{
+	const uint64_t wait_ms = (uint64_t)(init_read_pending_count + 1) *
+					 CONFIG_KNX_READ_ON_INIT_DELAY_MS +
+				 CONFIG_KNX_READ_ON_INIT_RESPONSE_TIMEOUT_MS;
+
+	return (oc_clock_time_t)(wait_ms * OC_CLOCK_SECOND / MSEC_PER_SEC);
+}
+
+/* Returns instead of removing itself: the stack frees a timed event after its
+ * callback returns OC_EVENT_DONE.
+ */
+static oc_event_callback_retval_t init_read_timeout(void *data)
+{
+	(void)data;
+
+	if (init_read_pending_count == 0) {
+		return OC_EVENT_DONE;
+	}
+
+	if (init_read_retries_left > 0) {
+		init_read_retries_left--;
+		LOG_WRN("No read-on-init response for %zu datapoints, sending the requests again",
+			init_read_pending_count);
+		oc_init_datapoints_at_initialization();
+		return OC_EVENT_CONTINUE;
+	}
+
+	LOG_WRN("No read-on-init response for %zu datapoints", init_read_pending_count);
+	for_each_datapoint(init_read_give_up);
+
+	return OC_EVENT_DONE;
+}
+
+void knx_init_read_begin(void)
+{
+	if (g_device == NULL) {
+		LOG_ERR("read on init started before KNX device registration");
+		return;
+	}
+
+	init_read_pending_count = 0;
+	if (oc_is_device_in_runtime()) {
+		for_each_datapoint(init_read_mark);
+	}
+
+	init_read_needed = init_read_pending_count > 0;
+	if (!init_read_needed) {
+		return;
+	}
+
+	/* Without a network the device keeps waiting otherwise. The same wait
+	 * bounds the time to attach, after which the stored values stand.
+	 */
+	init_read_retries_left = 0;
+	oc_ri_remove_timed_event_callback(NULL, init_read_timeout);
+	oc_ri_add_timed_event_callback_ticks(NULL, init_read_timeout, init_read_wait_ticks());
+}
+
+void knx_init_read_start(void)
+{
+	if (!init_read_needed) {
+		return;
+	}
+
+	init_read_needed = false;
+	oc_ri_remove_timed_event_callback(NULL, init_read_timeout);
+
+	/* Sent even if the device gave up before it attached: a late response
+	 * still updates the datapoints.
+	 */
+	oc_init_datapoints_at_initialization();
+
+	if (init_read_pending_count > 0) {
+		init_read_retries_left = CONFIG_KNX_READ_ON_INIT_RETRIES;
+		oc_ri_add_timed_event_callback_ticks(NULL, init_read_timeout,
+						     init_read_wait_ticks());
+	}
+}
+
+void knx_init_read_cancel(void)
+{
+	if (g_device == NULL) {
+		return;
+	}
+
+	init_read_needed = false;
+	for_each_datapoint(init_read_give_up);
+}
+#endif /* CONFIG_KNXIOT_CLIENT */

@@ -217,7 +217,7 @@ static void knx_start_thread_joiner(void)
 	}
 
 	error = otJoinerStart(instance, CONFIG_OPENTHREAD_JOINER_PSKD, NULL, NULL, NULL, NULL, NULL,
-		knx_thread_joiner_callback, NULL);
+			      knx_thread_joiner_callback, NULL);
 	openthread_mutex_unlock();
 
 	if (error != OT_ERROR_NONE) {
@@ -281,6 +281,8 @@ static void knx_knx_factory_reset(void)
 {
 	LOG_INF("KNX factory reset requested");
 	oc_knx_device_reset(RESET_TO_DEFAULT_STATE);
+	/* oc_knx_device_reset() does not invoke the stack's reset callback. */
+	knx_datapoints_factory_reset();
 }
 #endif /* CONFIG_KNX_ETS_COMMISSIONING */
 
@@ -328,7 +330,8 @@ static void knx_thread_factory_reset(void)
 
 	if (error == OT_ERROR_NONE) {
 		if (k_sem_take(&knx_ctx.thread_factory_reset_sem,
-			       K_SECONDS(CONFIG_KNX_THREAD_FACTORY_RESET_SRP_TIMEOUT_SECONDS)) == 0) {
+			       K_SECONDS(CONFIG_KNX_THREAD_FACTORY_RESET_SRP_TIMEOUT_SECONDS)) ==
+		    0) {
 			LOG_INF("SRP host and key lease removed");
 		} else {
 			LOG_WRN("Timed out removing SRP host; stale registration may remain");
@@ -386,11 +389,17 @@ static void knx_on_network_ready(const knx_device_t *dev)
 
 	(void)oc_connectivity_get_endpoints();
 	LOG_INF("Thread network attached");
-	if (knx_dns_sd_update_service(device->serialnumber, device->iid, device->ia, device->pm) < 0) {
+	if (knx_dns_sd_update_service(device->serialnumber, device->iid, device->ia, device->pm) <
+	    0) {
 		LOG_ERR("Failed to publish KNX service");
 	} else {
 		LOG_INF("KNX service published");
 	}
+
+#if defined(CONFIG_KNXIOT_CLIENT)
+	/* Start fetching the "real" value of datapoints*/
+	knx_init_read_start();
+#endif
 
 	if (dev->on_ready != NULL) {
 		dev->on_ready();
@@ -491,6 +500,8 @@ int knx_app_start(void)
 	}
 	LOG_INF("KNX stack initialized");
 
+	knx_datapoints_load();
+
 #if defined(CONFIG_KNX_HARDCODED_COMMISSIONING)
 	if (dev->preset != NULL) {
 		ret = knx_apply_presets(dev->preset);
@@ -499,6 +510,10 @@ int knx_app_start(void)
 			return ret;
 		}
 	}
+#endif
+
+#if defined(CONFIG_KNXIOT_CLIENT)
+	knx_init_read_begin();
 #endif
 
 #if defined(CONFIG_DK_LIBRARY)

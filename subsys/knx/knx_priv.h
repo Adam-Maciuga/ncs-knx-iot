@@ -28,6 +28,22 @@ void knx_get_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 void knx_put_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *user_data);
 void knx_restart_handler(void *data);
 
+/* Datapoint persistence (knx_resources.c). Load runs once after stack init,
+ * before on_init. Factory reset erases stored values and restores defaults.
+ */
+void knx_datapoints_load(void);
+void knx_datapoints_factory_reset(void);
+
+/* Read on init (knx_resources.c). Begin marks the datapoints whose group
+ * objects have the I-flag as pending, once the stack has loaded its tables and
+ * before on_init, and bounds the wait for the network. Start sends the
+ * requests once the network is ready and retries on timeout. Cancel ends every
+ * pending wait.
+ */
+void knx_init_read_begin(void);
+void knx_init_read_start(void);
+void knx_init_read_cancel(void);
+
 /* Helper required by compiled libknx sources (port/zephyr/knx_shell.c). */
 const char *app_get_password(void);
 
