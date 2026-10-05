@@ -281,6 +281,7 @@ static void knx_knx_factory_reset(void)
 {
 	LOG_INF("KNX factory reset requested");
 	oc_knx_device_reset(RESET_TO_DEFAULT_STATE);
+	knx_datapoints_factory_reset();
 }
 #endif /* CONFIG_KNX_ETS_COMMISSIONING */
 
@@ -490,6 +491,8 @@ int knx_app_start(void)
 		return ret;
 	}
 	LOG_INF("KNX stack initialized");
+
+	knx_datapoints_load();
 
 #if defined(CONFIG_KNX_HARDCODED_COMMISSIONING)
 	if (dev->preset != NULL) {

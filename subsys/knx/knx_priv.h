@@ -28,6 +28,13 @@ void knx_get_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 void knx_put_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *user_data);
 void knx_restart_handler(void *data);
 
+/* Datapoint persistence.
+ * Load runs once after stack init and reads saved values from flash.
+ * Factory reset erases stored values and restores defaults.
+ */
+void knx_datapoints_load(void);
+void knx_datapoints_factory_reset(void);
+
 /* Helper required by compiled libknx sources (port/zephyr/knx_shell.c). */
 const char *app_get_password(void);
 
