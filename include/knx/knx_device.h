@@ -108,6 +108,7 @@ struct knx_datapoint {
 
 	knx_datapoint_value_t value; /* current value, with its datapoint type */
 
+	bool init_read_pending;	     /* Runtime state managed by the add-on */
 	knx_datapoint_data_t stored; /* value in storage, has value.kind */
 };
 
@@ -132,6 +133,13 @@ typedef struct {
  */
 typedef void (*knx_write_cb_t)(const knx_datapoint_t *dp);
 
+/* Invoked on the KNX thread when the device stops waiting for the read-on-init
+ * response of a datapoint. received is true if a response or another write
+ * updated the value, and false if the requests timed out or the device did not
+ * attach in time. A response that arrives later is reported through on_write.
+ */
+typedef void (*knx_init_read_cb_t)(const knx_datapoint_t *dp, bool received);
+
 /* Generic lifecycle hook. (on_init, on_ready etc.) */
 typedef void (*knx_lifecycle_cb_t)(void);
 
@@ -150,6 +158,8 @@ typedef struct {
 	knx_lifecycle_cb_t on_init;  /* after stack init + presets, before the KNX thread starts */
 	knx_lifecycle_cb_t on_ready; /* network up + service published (KNX thread) */
 	knx_write_cb_t on_write;     /* after a PUT or factory reset (KNX thread) */
+	knx_init_read_cb_t
+		on_init_read; /* read-on-init finished waiting for a datapoint value (KNX thread) */
 
 	const struct knx_preset *preset; /* hardcoded commissioning, or NULL */
 } knx_device_t;
@@ -175,6 +185,15 @@ knx_persist_action_t knx_persist_always(const knx_datapoint_t *dp,
 
 /** @brief Look up a datapoint by id (NULL if not found). */
 knx_datapoint_t *knx_datapoint_by_id(uint16_t id);
+
+/**
+ * @brief Check whether the device still waits for a datapoint's read-on-init response.
+ *
+ * A commissioned device waits from startup for every datapoint whose group
+ * object has the Read on Init (I) flag, until a response arrives or the
+ * requests time out.
+ */
+bool knx_datapoint_init_read_pending(uint16_t id);
 
 /* Those generic functions should be used in the common implementation. Whenever
  * data type is known, the typed helpers should be used*/

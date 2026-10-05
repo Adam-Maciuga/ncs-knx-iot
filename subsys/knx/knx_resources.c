@@ -19,11 +19,13 @@
 
 #include <zephyr/logging/log.h>
 #include <zephyr/settings/settings.h>
+#include <zephyr/sys_clock.h>
 
 #include "api/oc_knx_fp.h"
 #include "oc_api.h"
 #include "oc_core_res.h"
 #include "oc_helpers.h"
+#include "oc_knx.h"
 #include "oc_knx_client.h"
 
 LOG_MODULE_REGISTER(knx_resources, LOG_LEVEL_INF);
@@ -33,6 +35,10 @@ LOG_MODULE_REGISTER(knx_resources, LOG_LEVEL_INF);
 #define KNX_DP_SETTINGS_KEY_SIZE sizeof(KNX_DP_SETTINGS_PREFIX "/ffff")
 
 static const knx_device_t *g_device;
+
+#if defined(CONFIG_KNXIOT_CLIENT)
+static void init_read_finish(knx_datapoint_t *dp, bool received);
+#endif
 
 /* Number of stored bytes for each datapoint type, or 0 if the type cannot be
  * persisted.
@@ -127,6 +133,13 @@ knx_datapoint_t *knx_datapoint_by_id(uint16_t id)
 	}
 
 	return NULL;
+}
+
+bool knx_datapoint_init_read_pending(uint16_t id)
+{
+	const knx_datapoint_t *dp = knx_datapoint_by_id(id);
+
+	return dp != NULL && dp->init_read_pending;
 }
 
 int knx_datapoint_get(uint16_t id, knx_datapoint_value_t *value)
@@ -482,6 +495,10 @@ void knx_put_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 				return;
 			}
 
+#if defined(CONFIG_KNXIOT_CLIENT)
+			init_read_finish(dp, true);
+#endif
+
 			if (g_device->on_write != NULL) {
 				g_device->on_write(dp);
 			}
@@ -715,6 +732,10 @@ void knx_datapoints_factory_reset(void)
 	}
 
 	for_each_datapoint(factory_reset_datapoint);
+
+#if defined(CONFIG_KNXIOT_CLIENT)
+	knx_init_read_cancel();
+#endif
 }
 
 static void restart_datapoint(knx_datapoint_t *dp)
@@ -743,3 +764,125 @@ void knx_restart_handler(void *data)
 	for_each_datapoint(restart_datapoint);
 	for_each_datapoint(restart_sync_mirror);
 }
+
+#if defined(CONFIG_KNXIOT_CLIENT)
+static size_t init_read_pending_count;
+static uint8_t init_read_retries_left;
+static bool init_read_needed;
+
+static void init_read_mark(knx_datapoint_t *dp)
+{
+	const oc_group_object_table_t *go = oc_core_find_sending_ga_in_pos_zero_for_href(dp->path);
+
+	dp->init_read_pending = go != NULL && (go->cflags & OC_CFLAG_INIT);
+	if (dp->init_read_pending) {
+		init_read_pending_count++;
+	}
+}
+
+static void init_read_finish(knx_datapoint_t *dp, bool received)
+{
+	if (!dp->init_read_pending) {
+		return;
+	}
+
+	dp->init_read_pending = false;
+	init_read_pending_count--;
+
+	if (g_device->on_init_read != NULL) {
+		g_device->on_init_read(dp, received);
+	}
+}
+
+static void init_read_give_up(knx_datapoint_t *dp)
+{
+	init_read_finish(dp, false);
+}
+
+/* The stack sends one request per KNX_READ_ON_INIT_DELAY_MS, starting one
+ * delay after the scan begins. Wait for the last one plus the response time.
+ */
+static oc_clock_time_t init_read_wait_ticks(void)
+{
+	const uint64_t wait_ms =
+		(uint64_t)(init_read_pending_count + 1) * CONFIG_KNX_READ_ON_INIT_DELAY_MS +
+		CONFIG_KNX_READ_ON_INIT_RESPONSE_TIMEOUT_MS;
+
+	return (oc_clock_time_t)(wait_ms * OC_CLOCK_SECOND / MSEC_PER_SEC);
+}
+
+/* Returns instead of removing itself: the stack frees a timed event after its
+ * callback returns OC_EVENT_DONE.
+ */
+static oc_event_callback_retval_t init_read_timeout(void *data)
+{
+	(void)data;
+
+	if (init_read_pending_count == 0) {
+		return OC_EVENT_DONE;
+	}
+
+	if (init_read_retries_left > 0) {
+		init_read_retries_left--;
+		LOG_WRN("No read-on-init response for %zu datapoints, sending the requests again",
+			init_read_pending_count);
+		oc_init_datapoints_at_initialization();
+		return OC_EVENT_CONTINUE;
+	}
+
+	LOG_WRN("No read-on-init response for %zu datapoints", init_read_pending_count);
+	for_each_datapoint(init_read_give_up);
+
+	return OC_EVENT_DONE;
+}
+
+void knx_init_read_begin(void)
+{
+	if (g_device == NULL) {
+		LOG_ERR("read on init started before KNX device registration");
+		return;
+	}
+
+	init_read_pending_count = 0;
+	if (oc_is_device_in_runtime()) {
+		for_each_datapoint(init_read_mark);
+	}
+
+	init_read_needed = init_read_pending_count > 0;
+	if (!init_read_needed) {
+		return;
+	}
+
+	init_read_retries_left = 0;
+	oc_ri_remove_timed_event_callback(NULL, init_read_timeout);
+	oc_ri_add_timed_event_callback_ticks(NULL, init_read_timeout, init_read_wait_ticks());
+}
+
+void knx_init_read_start(void)
+{
+	if (!init_read_needed) {
+		return;
+	}
+
+	init_read_needed = false;
+	oc_ri_remove_timed_event_callback(NULL, init_read_timeout);
+
+	oc_init_datapoints_at_initialization();
+
+	if (init_read_pending_count > 0) {
+		init_read_retries_left = CONFIG_KNX_READ_ON_INIT_RETRIES;
+		oc_ri_add_timed_event_callback_ticks(NULL, init_read_timeout,
+						     init_read_wait_ticks());
+	}
+}
+
+void knx_init_read_cancel(void)
+{
+	if (g_device == NULL) {
+		return;
+	}
+
+	init_read_needed = false;
+	for_each_datapoint(init_read_give_up);
+}
+#endif /* CONFIG_KNXIOT_CLIENT */

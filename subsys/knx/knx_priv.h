@@ -35,6 +35,15 @@ void knx_restart_handler(void *data);
 void knx_datapoints_load(void);
 void knx_datapoints_factory_reset(void);
 
+/* Handles reading values of datapoints from the network (I flag, read on init)
+ * Begin (before knx_board_init) marks all the dp and starts the process, called before the network
+ * is attached. Start (after attached to a network) does the fetching and potential retries after
+ * the network is found
+ */
+void knx_init_read_begin(void);
+void knx_init_read_start(void);
+void knx_init_read_cancel(void);
+
 /* Helper required by compiled libknx sources (port/zephyr/knx_shell.c). */
 const char *app_get_password(void);
 
