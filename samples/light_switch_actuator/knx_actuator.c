@@ -60,7 +60,7 @@ static void actuator_update_light(size_t channel)
  * Identity. serialnumber and application_name are non-static because the
  * compiled libknx shell (port/zephyr/knx_shell.c) references them by name.
  */
-const char sn_lower_case[] = "00fa10020900";
+const char sn_lower_case[] = CONFIG_KNX_SERIAL_NUMBER;
 const char application_name[] = "KNX virtual actuator (LSAB)";
 
 static const knx_identity_t actuator_identity = {
