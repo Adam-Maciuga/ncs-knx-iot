@@ -17,7 +17,6 @@ manifest:
       import: true
 
     - name: sdk-knx-iot-stack
+      url: https://github.com/Adam-Maciuga/sdk-knx-iot-point-api-stack
       revision: main
-      remote: ncs
-      repo-path: sdk-knx-iot-point-api-stack
       path: modules/lib/sdk-knx-iot-stack
