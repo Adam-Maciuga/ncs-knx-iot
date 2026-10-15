@@ -239,7 +239,6 @@ static const knx_device_t certification_device = {
 	.on_ready = NULL,
 	.on_write = certification_on_write,
 	.on_init_read = certification_on_init_read,
-	.preset = NULL,
 };
 
 void app_register_device(void)
