@@ -13,12 +13,17 @@
 
 #include <knx/knx_presets.h>
 
+#include "knx_priv.h"
+
 #include "oc_core_res.h"
+#include "oc_endpoint.h"
 #include "oc_helpers.h"
 #include "oc_knx.h"
 #include "oc_knx_dev.h"
 #include "oc_knx_fp.h"
 #include "oc_knx_sec.h"
+#include "oc_ri.h"
+#include "messaging/coap/oscore_constants.h"
 #include "port/oc_storage.h"
 
 #include <errno.h>
@@ -27,8 +32,75 @@
 
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include <zephyr/sys/util.h>
 
 LOG_MODULE_REGISTER(knx_presets, LOG_LEVEL_INF);
+
+/* Group objects with these flags send on their group address. */
+#define SENDING_CFLAGS	 (OC_CFLAG_TRANSMISSION | OC_CFLAG_INIT)
+/* Group objects with these flags receive on their group address. */
+#define RECEIVING_CFLAGS (OC_CFLAG_WRITE | OC_CFLAG_UPDATE | OC_CFLAG_READ)
+#define VALID_CFLAGS	 (OC_CFLAG_COMMUNICATION | SENDING_CFLAGS | RECEIVING_CFLAGS)
+
+static int validate_group_object(size_t index, const struct knx_preset_group_object *go)
+{
+	if (go->href == NULL || go->href[0] != '/') {
+		LOG_ERR("group object %zu: href must be an absolute path", index);
+		return -EINVAL;
+	}
+
+	if (oc_ri_get_app_resource_by_resource_path(go->href, strlen(go->href)) == NULL) {
+		LOG_ERR("group object %zu: no resource at %s", index, go->href);
+		return -EINVAL;
+	}
+
+	if ((go->cflags & ~VALID_CFLAGS) != 0 ||
+	    (go->cflags & (SENDING_CFLAGS | RECEIVING_CFLAGS)) == 0) {
+		LOG_ERR("group object %zu: invalid cflags 0x%x", index, go->cflags);
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+static int validate_preset(const knx_preset_t *preset)
+{
+	const size_t got_size = oc_core_get_group_object_table_total_size();
+	int ret;
+
+	if (preset == NULL || preset->group_objects == NULL || preset->num_group_objects == 0) {
+		LOG_ERR("preset has no group objects");
+		return -EINVAL;
+	}
+
+	if (preset->num_group_objects > got_size) {
+		LOG_ERR("preset has %zu group objects, the group object table holds %zu",
+			preset->num_group_objects, got_size);
+		return -EINVAL;
+	}
+
+	for (size_t i = 0; i < preset->num_group_objects; i++) {
+		ret = validate_group_object(i, &preset->group_objects[i]);
+		if (ret < 0) {
+			return ret;
+		}
+	}
+
+	if (preset->group_ms == NULL || preset->group_ms_len < OSCORE_KEY_LEN ||
+	    preset->group_ms_len > OSCORE_MASTER_SECRET_LEN) {
+		LOG_ERR("group master secret must be %d to %d bytes", OSCORE_KEY_LEN,
+			OSCORE_MASTER_SECRET_LEN);
+		return -EINVAL;
+	}
+
+	if (preset->group_kid == NULL || preset->group_kid_len == 0 ||
+	    preset->group_kid_len > OSCORE_SENDER_ID_LEN) {
+		LOG_ERR("group kid must be 1 to %d bytes", OSCORE_SENDER_ID_LEN);
+		return -EINVAL;
+	}
+
+	return 0;
+}
 
 /* The stack owns (and frees) the ga arrays, so each must be its own heap slot.
  */
@@ -43,9 +115,48 @@ static uint32_t *dup_ga(uint32_t ga)
 	return slot;
 }
 
-static int setup_hardcoded_group_table(oc_group_table_t *entry, uint32_t ga, uint32_t grpid)
+/* Unique group addresses of the group objects with any of the given flags, in
+ * a heap array of their own for the stack to own. *ga is NULL if there are none.
+ */
+static int collect_gas(const knx_preset_t *preset, uint32_t cflags, uint32_t **ga, uint16_t *len)
+{
+	*ga = malloc(preset->num_group_objects * sizeof(uint32_t));
+	*len = 0;
+	if (*ga == NULL) {
+		return -ENOMEM;
+	}
+
+	for (size_t i = 0; i < preset->num_group_objects; i++) {
+		const struct knx_preset_group_object *go = &preset->group_objects[i];
+		bool found = false;
+
+		if ((go->cflags & cflags) == 0) {
+			continue;
+		}
+
+		for (uint16_t j = 0; j < *len && !found; j++) {
+			found = (*ga)[j] == go->ga;
+		}
+
+		if (!found) {
+			(*ga)[(*len)++] = go->ga;
+		}
+	}
+
+	if (*len == 0) {
+		free(*ga);
+		*ga = NULL;
+	}
+
+	return 0;
+}
+
+/* Takes ownership of ga. */
+static int setup_hardcoded_group_table(oc_group_table_t *entry, uint32_t *ga, uint16_t ga_len,
+				       uint32_t grpid)
 {
 	if (entry == NULL) {
+		free(ga);
 		return -EINVAL;
 	}
 
@@ -60,20 +171,17 @@ static int setup_hardcoded_group_table(oc_group_table_t *entry, uint32_t ga, uin
 	entry->fid = -1;
 	entry->grpid = grpid;
 	entry->non = true;
-	entry->ga_len = 1;
-	entry->ga = dup_ga(ga);
-	if (entry->ga == NULL) {
-		return -ENOMEM;
-	}
+	entry->ga_len = ga_len;
+	entry->ga = ga;
 
 	oc_new_string(&entry->at, "", 0);
 
 	return 0;
 }
 
-static int setup_hardcoded_got(uint32_t ga, const char *href, oc_cflag_mask_t cflags)
+static int setup_hardcoded_got(int index, uint32_t ga, const char *href, oc_cflag_mask_t cflags)
 {
-	oc_group_object_table_t *got = oc_core_get_group_object_table_entry(0);
+	oc_group_object_table_t *got = oc_core_get_group_object_table_entry(index);
 
 	if (got == NULL) {
 		return -EINVAL;
@@ -84,7 +192,7 @@ static int setup_hardcoded_got(uint32_t ga, const char *href, oc_cflag_mask_t cf
 		free(got->ga);
 	}
 
-	got->id = 0;
+	got->id = index;
 	got->cflags = cflags;
 	got->ga_len = 1;
 	got->ga = dup_ga(ga);
@@ -93,7 +201,7 @@ static int setup_hardcoded_got(uint32_t ga, const char *href, oc_cflag_mask_t cf
 	}
 
 	oc_new_string(&got->href, href, strlen(href));
-	oc_store_group_object_table_entry(0);
+	oc_store_group_object_table_entry(index);
 
 	return 0;
 }
@@ -114,73 +222,101 @@ static oc_auth_at_t *find_empty_at_entry(void)
 	return NULL;
 }
 
+/* The serial number is the OSCORE ID Context, so receivers keep a separate
+ * context and replay window for every sender of the shared group key.
+ */
 static int setup_hardcoded_access_token(const knx_preset_t *preset)
 {
 	oc_auth_at_t *at = find_empty_at_entry();
+	const char *serial_number = oc_core_get_device_info()->serialnumber;
+	uint8_t context_id[SERIAL_NUM_SIZE / 2];
+	uint16_t ga_len;
 
 	if (at == NULL) {
 		return -ENOMEM;
 	}
 
+	if (hex2bin(serial_number, strlen(serial_number), context_id, sizeof(context_id)) !=
+	    sizeof(context_id)) {
+		return -EINVAL;
+	}
+
+	if (collect_gas(preset, UINT32_MAX, &at->ga, &ga_len) < 0) {
+		return -ENOMEM;
+	}
+	at->ga_len = ga_len;
+
 	oc_new_string(&at->id, "hardcoded-at-0", 14);
 	at->profile = OC_PROFILE_COAP_OSCORE;
 	at->scope = OC_ACL_GA;
-	at->ga_len = 1;
-	at->ga = dup_ga(preset->ga);
-	if (at->ga == NULL) {
-		return -ENOMEM;
-	}
 
 	oc_new_byte_string(&at->osc_id, (char *)preset->group_kid, preset->group_kid_len);
 	oc_new_byte_string(&at->osc_ms, (char *)preset->group_ms, preset->group_ms_len);
 	oc_new_byte_string(&at->osc_salt, "", 0);
-	oc_new_byte_string(&at->osc_contextid, "", 0);
+	oc_new_byte_string(&at->osc_contextid, (char *)context_id, sizeof(context_id));
 
 	return 0;
 }
 
 int knx_apply_presets(const knx_preset_t *preset)
 {
+	uint32_t *ga;
+	uint16_t ga_len;
+	bool has_publisher_table;
 	int ret;
 
-	if (preset == NULL) {
-		return -EINVAL;
+	ret = validate_preset(preset);
+	if (ret < 0) {
+		return ret;
 	}
 
-	LOG_DBG("applying hardcoded KNX presets (fid=%llu iid=%llu ia=%d ga=%u)",
-		(unsigned long long)preset->fid, (unsigned long long)preset->iid, preset->ia,
-		preset->ga);
+#if defined(CONFIG_KNX_HARDCODED_IDENTITY_HWINFO)
+	const int32_t ia = knx_identity_hwinfo_ia();
+#else
+	const int32_t ia = preset->ia;
+#endif
+
+	LOG_DBG("applying hardcoded KNX presets (fid=%llu iid=%llu ia=%d)",
+		(unsigned long long)preset->fid, (unsigned long long)preset->iid, ia);
 
 	oc_core_set_and_store_device_fid(preset->fid);
 	oc_core_set_and_store_device_iid(preset->iid);
-	oc_core_set_and_store_device_ia(preset->ia);
+	oc_core_set_and_store_device_ia(ia);
 	oc_knx_set_and_store_lsm(LSM_S_LOADED);
 
 	oc_device_info_t *device = oc_core_get_device_info();
 
 	device->pm = false;
 
-	ret = setup_hardcoded_got(preset->ga, preset->got_href,
-				  (oc_cflag_mask_t)preset->got_cflags);
+	for (size_t i = 0; i < preset->num_group_objects; i++) {
+		const struct knx_preset_group_object *go = &preset->group_objects[i];
+
+		ret = setup_hardcoded_got((int)i, go->ga, go->href, (oc_cflag_mask_t)go->cflags);
+		if (ret < 0) {
+			LOG_ERR("failed to configure group object table: %d", ret);
+			return ret;
+		}
+	}
+
+	ret = collect_gas(preset, RECEIVING_CFLAGS, &ga, &ga_len);
+	has_publisher_table = ga != NULL;
+	if (ret == 0 && has_publisher_table) {
+		ret = setup_hardcoded_group_table(oc_core_get_publisher_table_entry(0), ga, ga_len,
+						  preset->grpid);
+	}
 	if (ret < 0) {
-		LOG_ERR("failed to configure group object table: %d", ret);
+		LOG_ERR("failed to configure publisher table: %d", ret);
 		return ret;
 	}
 
-	if (preset->is_publisher) {
-		ret = setup_hardcoded_group_table(oc_core_get_publisher_table_entry(0), preset->ga,
+	ret = collect_gas(preset, SENDING_CFLAGS, &ga, &ga_len);
+	if (ret == 0 && ga != NULL) {
+		ret = setup_hardcoded_group_table(oc_core_get_recipient_table_entry(0), ga, ga_len,
 						  preset->grpid);
-		if (ret < 0) {
-			LOG_ERR("failed to configure publisher table: %d", ret);
-			return ret;
-		}
-	} else {
-		ret = setup_hardcoded_group_table(oc_core_get_recipient_table_entry(0), preset->ga,
-						  preset->grpid);
-		if (ret < 0) {
-			LOG_ERR("failed to configure recipient table: %d", ret);
-			return ret;
-		}
+	}
+	if (ret < 0) {
+		LOG_ERR("failed to configure recipient table: %d", ret);
+		return ret;
 	}
 
 	ret = setup_hardcoded_access_token(preset);
@@ -189,9 +325,9 @@ int knx_apply_presets(const knx_preset_t *preset)
 		return ret;
 	}
 
-	oc_init_oscore_from_storage(false);
+	oc_init_oscore_from_storage(true);
 
-	if (preset->is_publisher) {
+	if (has_publisher_table) {
 		/* Re-register: the PUB table was empty during oc_main_init(). */
 		oc_register_group_multicasts();
 	}
