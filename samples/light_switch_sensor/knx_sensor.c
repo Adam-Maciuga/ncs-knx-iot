@@ -218,7 +218,7 @@ static void sensor_toggle_channel(size_t channel)
 
 	sensor_update_channel_led(channel);
 
-	LOG_INF("Switch pressed: sending light %s", value ? "on" : "off");
+	LOG_INF("[CH%zu] Switch pressed: sending light %s", channel, value ? "on" : "off");
 	knx_datapoint_transmit(toggle_id);
 }
 
