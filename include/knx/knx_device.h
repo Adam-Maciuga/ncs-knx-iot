@@ -224,8 +224,13 @@ int knx_datapoint_set_u16(uint16_t id, uint16_t value);
  * @brief Announce a datapoint value as an s-mode multicast write.
  *
  * Call from the KNX thread (e.g. a work handler).
+ *
+ * @retval 0 on success.
+ * @retval -ENOENT if no datapoint has the given id.
+ * @retval -ENOTCONN if the datapoint cannot transmit: the device is not loaded,
+ *         or no group object with the transmit flag is bound to it.
  */
-void knx_datapoint_transmit(uint16_t id);
+int knx_datapoint_transmit(uint16_t id);
 
 #ifdef __cplusplus
 }

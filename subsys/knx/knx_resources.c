@@ -241,15 +241,20 @@ int knx_datapoint_set_u16(uint16_t id, uint16_t value)
 				     });
 }
 
-void knx_datapoint_transmit(uint16_t id)
+int knx_datapoint_transmit(uint16_t id)
 {
 	const knx_datapoint_t *dp = knx_datapoint_by_id(id);
 
-	if (dp != NULL) {
-		oc_send_s_mode_mc_or_uc_message(KNX_MULTICAST_SCOPE, dp->path, 'w');
-	} else {
+	if (dp == NULL) {
 		LOG_ERR("transmit requested for unknown datapoint id 0x%04x", id);
+		return -ENOENT;
 	}
+
+	if (oc_send_s_mode_mc_or_uc_message(KNX_MULTICAST_SCOPE, dp->path, 'w') < 0) {
+		return -ENOTCONN;
+	}
+
+	return 0;
 }
 
 /* Generic GET for any supported datapoint. user_data is the knx_datapoint_t *.

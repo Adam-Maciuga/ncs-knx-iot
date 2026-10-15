@@ -21,6 +21,8 @@
 #include <knx/knx_presets.h>
 #endif
 
+#include <errno.h>
+
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/atomic.h>
 #include <zephyr/sys/util.h>
@@ -219,7 +221,9 @@ static void sensor_toggle_channel(size_t channel)
 	sensor_update_channel_led(channel);
 
 	LOG_INF("[CH%zu] Switch pressed: sending light %s", channel, value ? "on" : "off");
-	knx_datapoint_transmit(toggle_id);
+	if (knx_datapoint_transmit(toggle_id) == -ENOTCONN) {
+		LOG_INF("[CH%zu] Channel is not configured", channel);
+	}
 }
 
 static void sensor_process_buttons(void)
