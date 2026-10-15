@@ -191,7 +191,7 @@ static void actuator_on_write(const knx_datapoint_t *dp)
 
 	actuator_update_light(KNX_DP_CHANNEL(dp->id));
 	if (knx_datapoint_get_bool(dp->id, &value) == 0) {
-		LOG_INF("Light turned %s", value ? "on" : "off");
+		LOG_INF("[CH%u] Light turned %s", KNX_DP_CHANNEL(dp->id), value ? "on" : "off");
 	}
 }
 

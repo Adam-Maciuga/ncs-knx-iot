@@ -10,6 +10,9 @@
  */
 
 #include <knx/knx_device.h>
+#if defined(CONFIG_DK_LIBRARY)
+#include <knx/knx_board.h>
+#endif
 
 #include "knx_priv.h"
 
@@ -68,6 +71,10 @@ static void reset_cb(int reset_value, void *data)
 	if (reset_value == RESET_TO_DEFAULT_STATE || reset_value == RESET_TO_DEFAULT_WO_IA) {
 		knx_datapoints_factory_reset();
 	}
+
+#if defined(CONFIG_DK_LIBRARY)
+	knx_board_update_status();
+#endif
 }
 
 static void hostname_cb(const oc_string_t host_name, void *data)
