@@ -26,4 +26,10 @@ config KNX_UNICAST_PORT
 config OPENTHREAD_MLR
 	default y if OPENTHREAD
 
+# The stack subscribes to the three all-CoAP-nodes groups (ff02::fd, ff03::fd,
+# ff05::fd) for discovery, plus one group-communication address per distinct
+# group ID. All of them share this pool.
+config OPENTHREAD_IP6_MAX_EXT_MCAST_ADDRS
+	default 8 if OPENTHREAD
+
 endif # KNX_IOT_ADD_ON
