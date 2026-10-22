@@ -321,23 +321,34 @@ void knx_get_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 
 	if (oc_query_value_exists(request, "m") != -1) {
 		char *m_value = NULL;
-		size_t m_value_len = 0;
+		int m_value_len = -1;
+		bool more_query_params;
 
+		/* The iterator returns whether more query parameters follow, so the
+		 * last (or only) "m" value is reported together with false.
+		 */
 		bool wildcard = false;
 		oc_init_query_iterator();
-		while (oc_iterate_query_get_values(request, "m", &m_value, &m_value_len)) {
+		do {
+			more_query_params =
+				oc_iterate_query_get_values(request, "m", &m_value, &m_value_len);
 			if (m_value_len == 1 && m_value[0] == '*') {
 				wildcard = true;
 				break;
 			}
-		}
+		} while (more_query_params);
 
 		oc_init_query_iterator();
-		while (oc_iterate_query_get_values(request, "m", &m_value, &m_value_len)) {
+		do {
+			more_query_params =
+				oc_iterate_query_get_values(request, "m", &m_value, &m_value_len);
+			if (m_value_len < 0) {
+				break;
+			}
 			if (knx_m_value_is(m_value, m_value_len, "id") || wildcard) {
 				char serial_number[65];
 
-				(void)snprintf(serial_number, 65, "knx://sn:%s%s",
+				(void)snprintf(serial_number, 65, "knx://sn.%s%s",
 					       device->serialnumber,
 					       oc_string(request->resource->uri));
 				oc_rep_i_set_text_string(root, 0, serial_number);
@@ -408,7 +419,7 @@ void knx_get_dp(oc_request_t *request, oc_interface_mask_t interfaces, void *use
 			if (wildcard) {
 				break;
 			}
-		}
+		} while (more_query_params);
 	} else {
 		switch (dp->value.kind) {
 		case KNX_DPT_BOOL:
