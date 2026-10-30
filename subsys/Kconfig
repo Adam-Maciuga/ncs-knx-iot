@@ -141,6 +141,13 @@ config KNX_THREAD_FACTORY_RESET_SRP_TIMEOUT_SECONDS
 	  device's host registration and key lease before erasing OpenThread
 	  persistent state. The factory reset continues after the timeout.
 
+config KNX_THREAD_AUTOSTART_COMMISSIONED
+	bool "Start Thread on boot when a dataset is stored"
+	depends on OPENTHREAD_MANUAL_START
+	help
+	  With manual OpenThread start, start the Thread network on boot if an
+	  active dataset is already stored.
+
 config KNX_READ_ON_INIT_RESPONSE_TIMEOUT_MS
 	int "Read-on-init response timeout (milliseconds)"
 	default 2000
