@@ -233,6 +233,34 @@ static void knx_start_thread_joiner(void)
 #endif
 }
 
+#if defined(CONFIG_KNX_THREAD_AUTOSTART_COMMISSIONED)
+static void knx_start_commissioned_thread(void)
+{
+	otInstance *instance = openthread_get_default_instance();
+	bool commissioned;
+
+	if (instance == NULL) {
+		LOG_ERR("Cannot start Thread: OpenThread is unavailable");
+		return;
+	}
+
+	openthread_mutex_lock();
+	commissioned = otDatasetIsCommissioned(instance);
+	openthread_mutex_unlock();
+
+	if (!commissioned) {
+		LOG_INF("No Thread dataset stored; waiting for manual setup");
+		return;
+	}
+
+	if (openthread_run() < 0) {
+		LOG_ERR("Failed to start the commissioned Thread network");
+	} else {
+		LOG_INF("Commissioned Thread network start requested");
+	}
+}
+#endif
+
 void knx_app_post_work(void)
 {
 	knx_post_action(&knx_ctx.work_pending);
@@ -535,6 +563,10 @@ int knx_app_start(void)
 		LOG_ERR("Failed to register network state handler: %d", ret);
 		return ret;
 	}
+
+#if defined(CONFIG_KNX_THREAD_AUTOSTART_COMMISSIONED)
+	knx_start_commissioned_thread();
+#endif
 
 	/* Sample-owned setup: app input handlers, initial output state. */
 	if (dev->on_init != NULL) {
