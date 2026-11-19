@@ -201,6 +201,18 @@ config KNX_SWU_WRITE_BUFFER_SIZE
 	  it is written to the secondary slot. Must be a multiple of the flash
 	  write block size.
 
+config KNX_SWU_APPLY_MIN_DELAY
+	int "Minimum delay before applying a software update [s]"
+	default 2
+	range 0 65535
+	depends on KNX_SWU
+	help
+	  Minimum time in seconds between a swu/update request and the reboot
+	  that applies the update. A shorter defer time requested by the
+	  management client is raised to this value, so that the swu/update
+	  response is sent before the device reboots. With 0, the device may
+	  reboot before the response is sent.
+
 rsource "ui/Kconfig"
 
 endif # KNX_IOT_ADD_ON

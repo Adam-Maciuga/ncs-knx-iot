@@ -40,9 +40,6 @@ LOG_MODULE_REGISTER(knx_swu, LOG_LEVEL_INF);
  */
 #define SWU_PENDING_KEY "knx_swu/pending"
 
-/* The stack sends the swu/update response after the upgrade callback returns. */
-#define SWU_APPLY_MIN_DELAY_S 2
-
 /* An MCUboot image the device can update, identified by its MCUboot image number. */
 struct swu_image {
 	int num;
@@ -258,7 +255,10 @@ static void swu_upgrade_cb(int defer_time, void *data)
 {
 	ARG_UNUSED(data);
 
-	const uint16_t delay = CLAMP(defer_time, SWU_APPLY_MIN_DELAY_S, UINT16_MAX);
+	/* The stack sends the swu/update response after this callback returns, so the
+	 * reboot is deferred at least long enough for the response to be sent.
+	 */
+	const uint16_t delay = CLAMP(defer_time, CONFIG_KNX_SWU_APPLY_MIN_DELAY, UINT16_MAX);
 
 	LOG_INF("Update requested, applying in %u s", delay);
 	oc_set_delayed_callback(NULL, swu_apply, delay);
