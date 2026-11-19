@@ -16,6 +16,7 @@
 
 #include "knx_priv.h"
 
+#include <zephyr/app_version.h>
 #include <zephyr/logging/log.h>
 
 #include "oc_api.h"
@@ -123,7 +124,11 @@ static int knx_stack_init_device(void)
 
 	/* The stack keeps the hardware version pointer. */
 	static const oc_knx_version_info_t hw_version = {.major = 0, .minor = 0, .patch = 1};
-	oc_knx_version_info_t fw_version = {.major = 0, .minor = 7, .patch = 0};
+	oc_knx_version_info_t fw_version = {
+		.major = APP_VERSION_MAJOR,
+		.minor = APP_VERSION_MINOR,
+		.patch = APP_PATCHLEVEL,
+	};
 	oc_knx_version_info_t app_version = {.major = 1, .minor = 0, .patch = 0};
 
 #if defined(CONFIG_KNX_HARDCODED_IDENTITY_HWINFO)
