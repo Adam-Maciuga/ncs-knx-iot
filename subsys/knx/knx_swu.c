@@ -8,10 +8,14 @@
  * KNX IoT software update (swu) on top of MCUboot.
  *
  * The package pushed to a/swu is a signed MCUboot image. It is streamed into the
- * secondary slot through the DFU target library. swu/update requests a test swap
- * and reboots. MCUboot verifies the image before it swaps. The next boot confirms
- * the new image and reports the result. If the new image is never confirmed,
- * MCUboot reverts to the previous one.
+ * secondary slot through the DFU target library. swu/update requests an upgrade
+ * and reboots. MCUboot verifies the image before it installs it, and discards an
+ * image that fails the check. The next boot confirms the running image and
+ * reports the result.
+ *
+ * In overwrite-only mode, used by the samples, MCUboot copies the new image over
+ * the primary slot and cannot revert it. In the swap modes the new image runs in
+ * test mode and MCUboot reverts to the previous one if it is never confirmed.
  */
 
 #include <stdio.h>
@@ -315,7 +319,9 @@ void knx_swu_boot_complete(void)
 		const int rc = boot_write_img_confirmed();
 
 		if (rc != 0) {
-			/* MCUboot reverts to the previous image on the next reset. */
+			/* In the swap modes, MCUboot reverts to the previous image on the
+			 * next reset.
+			 */
 			LOG_ERR("Cannot confirm the running image: %d", rc);
 			return;
 		}

@@ -187,10 +187,12 @@ config KNX_SWU
 	help
 	  Accept signed MCUboot images pushed through the KNX IoT swu
 	  functional block. The image is written to the secondary slot through
-	  the DFU target library. An update request swaps the image in test mode,
-	  and the new image is confirmed after the KNX stack starts on the next
-	  boot. The firmware version reported by the device is the version of
-	  the running MCUboot image.
+	  the DFU target library. An update request reboots the device, and
+	  MCUboot verifies and installs the image. In the swap modes the image
+	  runs in test mode and is confirmed after the KNX stack starts on the
+	  next boot. In overwrite-only mode the previous image is replaced and
+	  cannot be restored. The firmware version reported by the device is the
+	  version of the running MCUboot image.
 
 config KNX_SWU_WRITE_BUFFER_SIZE
 	int "Software update write buffer size"
