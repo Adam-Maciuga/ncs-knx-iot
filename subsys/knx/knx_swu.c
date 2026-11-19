@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <zephyr/devicetree.h>
 #include <zephyr/dfu/mcuboot.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/logging/log_ctrl.h>
@@ -69,6 +70,13 @@ static struct {
 	/* Version of the downloaded image. */
 	struct mcuboot_img_sem_ver version;
 } download;
+
+/* Write block size of the memory that holds the upload slot, internal or external. */
+#define SWU_UPLOAD_WRITE_BLOCK_SIZE                                                                \
+	DT_PROP_OR(DT_GPARENT(DT_NODELABEL(slot1_partition)), write_block_size, 1)
+
+BUILD_ASSERT(CONFIG_KNX_SWU_WRITE_BUFFER_SIZE % SWU_UPLOAD_WRITE_BLOCK_SIZE == 0,
+	     "CONFIG_KNX_SWU_WRITE_BUFFER_SIZE must be a multiple of the upload slot write block size");
 
 /* Collects received data until a full flash write block is available. */
 static uint8_t write_buf[CONFIG_KNX_SWU_WRITE_BUFFER_SIZE] __aligned(4);
